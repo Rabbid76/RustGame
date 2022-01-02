@@ -1,0 +1,2 @@
+# RustGame
+inspired by pygame
