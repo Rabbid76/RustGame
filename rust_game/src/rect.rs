@@ -1,3 +1,4 @@
+#[derive(Clone)]
 pub struct Rect {
     pub x: i32,
     pub y: i32,
@@ -7,12 +8,7 @@ pub struct Rect {
 
 impl Rect {
     pub fn new(x: i32, y: i32, w: i32, h: i32) -> Rect {
-        Rect {
-            x,
-            y,
-            w,
-            h,
-        }
+        Rect { x, y, w, h }
     }
 
     pub fn get_width(&self) -> i32 {
@@ -168,6 +164,26 @@ impl Rect {
         self.x = mid_right.0 - self.w;
         self.y = mid_right.1 - self.h / 2;
     }
+
+    pub fn move_(&self, x: i32, y: i32) -> Rect {
+        Rect::new(self.x + x, self.y + y, self.w, self.h)
+    }
+
+    pub fn move_ip(&mut self, x: i32, y: i32) {
+        self.x += x;
+        self.y += y;
+    }
+
+    pub fn inflate(&self, x: i32, y: i32) -> Rect {
+        Rect::new(self.x - x / 2, self.y - y / 2, self.w + x, self.h + y)
+    }
+
+    pub fn inflate_ip(&mut self, x: i32, y: i32) {
+        self.x -= x / 2;
+        self.y -= y / 2;
+        self.w += x;
+        self.h += y;
+    }
 }
 
 #[cfg(test)]
@@ -177,6 +193,15 @@ mod rect_test {
     #[test]
     fn new_test() {
         let rect = Rect::new(1, 2, 3, 4);
+        assert!(rect.x == 1);
+        assert!(rect.y == 2);
+        assert!(rect.w == 3);
+        assert!(rect.h == 4);
+    }
+
+    #[test]
+    fn copy_test() {
+        let rect = Rect::new(1, 2, 3, 4).clone();
         assert!(rect.x == 1);
         assert!(rect.y == 2);
         assert!(rect.w == 3);
@@ -449,5 +474,43 @@ mod rect_test {
         rect.set_mid_right((11, 12));
         assert!(rect.x == 4);
         assert!(rect.y == 8);
+    }
+
+    #[test]
+    fn move_test() {
+        let rect = Rect::new(0, 0, 1, 2).move_(5, 10);
+        assert!(rect.x == 5);
+        assert!(rect.y == 10);
+        assert!(rect.w == 1);
+        assert!(rect.h == 2);
+    }
+
+    #[test]
+    fn move_ip_test() {
+        let mut rect = Rect::new(0, 0, 1, 2);
+        rect.move_ip(5, 10);
+        assert!(rect.x == 5);
+        assert!(rect.y == 10);
+        assert!(rect.w == 1);
+        assert!(rect.h == 2);
+    }
+
+    #[test]
+    fn inflate_test() {
+        let rect = Rect::new(0, 0, 1, 2).inflate(8, 10);
+        assert!(rect.x == -4);
+        assert!(rect.y == -5);
+        assert!(rect.w == 9);
+        assert!(rect.h == 12);
+    }
+
+    #[test]
+    fn inflate_ip_test() {
+        let mut rect = Rect::new(0, 0, 1, 2);
+        rect.inflate_ip(8, 10);
+        assert!(rect.x == -4);
+        assert!(rect.y == -5);
+        assert!(rect.w == 9);
+        assert!(rect.h == 12);
     }
 }
