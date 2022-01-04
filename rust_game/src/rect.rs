@@ -1,3 +1,5 @@
+use std::cmp;
+
 #[derive(Clone)]
 pub struct Rect {
     pub x: i32,
@@ -183,6 +185,36 @@ impl Rect {
         self.y -= y / 2;
         self.w += x;
         self.h += y;
+    }
+
+    pub fn update(&mut self, x: i32, y: i32, width: i32, height: i32) {
+        self.x = x;
+        self.y = y;
+        self.w = width;
+        self.h = height;
+    }
+
+    pub fn clamp(&self, rect: &Rect) -> Rect {
+        let mut x = cmp::max(rect.x, cmp::min(self.x + self.w, rect.x + rect.w) - self.w);
+        let mut y = cmp::max(rect.y, cmp::min(self.y + self.h, rect.y + rect.h) - self.h);
+        if self.w > rect.w {
+            x -= (self.w - rect.w) / 2;
+        }
+        if self.h > rect.h {
+            y -= (self.h - rect.h) / 2;
+        }
+        Rect::new(x, y, self.w, self.h)
+    }
+
+    pub fn clamp_ip(&mut self, rect: &Rect) {
+        self.x = cmp::max(rect.x, cmp::min(self.x + self.w, rect.x + rect.w) - self.w);
+        self.y = cmp::max(rect.y, cmp::min(self.y + self.h, rect.y + rect.h) - self.h);
+        if self.w > rect.w {
+            self.x -= (self.w - rect.w) / 2;
+        }
+        if self.h > rect.h {
+            self.y -= (self.h - rect.h) / 2;
+        }
     }
 }
 
@@ -512,5 +544,78 @@ mod rect_test {
         assert!(rect.y == -5);
         assert!(rect.w == 9);
         assert!(rect.h == 12);
+    }
+
+    #[test]
+    fn update() {
+        let mut rect = Rect::new(0, 0, 0, 0);
+        rect.update(1, 2, 3, 4);
+        assert!(rect.x == 1);
+        assert!(rect.y == 2);
+        assert!(rect.w == 3);
+        assert!(rect.h == 4);
+    }
+
+    #[test]
+    fn clamp() {
+        let rect1 = Rect::new(10, 20, 10, 10).clamp(&Rect::new(20, 20, 100, 100));
+        assert!(rect1.x == 20);
+        assert!(rect1.y == 20);
+        assert!(rect1.w == 10);
+        assert!(rect1.h == 10);
+        let rect2 = Rect::new(10, 20, 10, 10).clamp(&Rect::new(20, 20, 100, 100));
+        assert!(rect2.x == 20);
+        assert!(rect2.y == 20);
+        assert!(rect2.w == 10);
+        assert!(rect2.h == 10);
+        let rect3 = Rect::new(200, 20, 10, 10).clamp(&Rect::new(20, 20, 100, 100));
+        assert!(rect3.x == 110);
+        assert!(rect3.y == 20);
+        assert!(rect3.w == 10);
+        assert!(rect3.h == 10);
+        let rect4 = Rect::new(20, 200, 10, 10).clamp(&Rect::new(20, 20, 100, 100));
+        assert!(rect4.x == 20);
+        assert!(rect4.y == 110);
+        assert!(rect4.w == 10);
+        assert!(rect4.h == 10);
+        let rect5 = Rect::new(20, 20, 20, 20).clamp(&Rect::new(100, 100, 10, 10));
+        assert!(rect5.x == 95);
+        assert!(rect5.y == 95);
+        assert!(rect5.w == 20);
+        assert!(rect5.h == 20);
+    }
+
+    #[test]
+    fn clamp_ip() {
+        let mut rect1 = Rect::new(10, 20, 10, 10);
+        rect1.clamp_ip(&Rect::new(20, 20, 100, 100));
+        assert!(rect1.x == 20);
+        assert!(rect1.y == 20);
+        assert!(rect1.w == 10);
+        assert!(rect1.h == 10);
+        let mut rect2 = Rect::new(20, 10, 10, 10);
+        rect2.clamp_ip(&Rect::new(20, 20, 100, 100));
+        assert!(rect2.x == 20);
+        assert!(rect2.y == 20);
+        assert!(rect2.w == 10);
+        assert!(rect2.h == 10);
+        let mut rect3 = Rect::new(200, 20, 10, 10);
+        rect3.clamp_ip(&Rect::new(20, 20, 100, 100));
+        assert!(rect3.x == 110);
+        assert!(rect3.y == 20);
+        assert!(rect3.w == 10);
+        assert!(rect3.h == 10);
+        let mut rect4 = Rect::new(10, 200, 10, 10);
+        rect4.clamp_ip(&Rect::new(20, 20, 100, 100));
+        assert!(rect4.x == 20);
+        assert!(rect4.y == 110);
+        assert!(rect4.w == 10);
+        assert!(rect4.h == 10);
+        let mut rect5 = Rect::new(200, 200, 20, 20);
+        rect5.clamp_ip(&Rect::new(100, 100, 10, 10));
+        assert!(rect5.x == 95);
+        assert!(rect5.y == 95);
+        assert!(rect5.w == 20);
+        assert!(rect5.h == 20);
     }
 }
