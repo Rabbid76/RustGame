@@ -216,6 +216,29 @@ impl Rect {
             self.y -= (self.h - rect.h) / 2;
         }
     }
+
+    pub fn clip(&self, rect: Rect) {}
+
+    // clipline
+    // union
+    // union_ip
+    // unionall
+    // unionall_ip
+    // fit
+    // normalize
+    // contains
+    // collidepoint
+
+    pub fn colliderect(&mut self, rect: &Rect) -> bool {
+        self.get_left() < rect.get_right()
+            && rect.get_left() < self.get_right()
+            && self.get_top() < rect.get_bottom()
+            && rect.get_top() < self.get_bottom()
+    }
+    // colliderect
+
+    // collidelist
+    // collidelistall
 }
 
 #[cfg(test)]
@@ -547,7 +570,7 @@ mod rect_test {
     }
 
     #[test]
-    fn update() {
+    fn update_test() {
         let mut rect = Rect::new(0, 0, 0, 0);
         rect.update(1, 2, 3, 4);
         assert!(rect.x == 1);
@@ -557,7 +580,7 @@ mod rect_test {
     }
 
     #[test]
-    fn clamp() {
+    fn clamp_test() {
         let rect1 = Rect::new(10, 20, 10, 10).clamp(&Rect::new(20, 20, 100, 100));
         assert!(rect1.x == 20);
         assert!(rect1.y == 20);
@@ -586,7 +609,7 @@ mod rect_test {
     }
 
     #[test]
-    fn clamp_ip() {
+    fn clamp_ip_test() {
         let mut rect1 = Rect::new(10, 20, 10, 10);
         rect1.clamp_ip(&Rect::new(20, 20, 100, 100));
         assert!(rect1.x == 20);
@@ -617,5 +640,13 @@ mod rect_test {
         assert!(rect5.y == 95);
         assert!(rect5.w == 20);
         assert!(rect5.h == 20);
+    }
+
+    #[test]
+    fn colliderect_test() {
+        assert!(Rect::new(10, 10, 10, 10).colliderect(&Rect::new(20, 20, 10, 10)) == false);
+        assert!(Rect::new(10, 10, 10, 10).colliderect(&Rect::new(10, 20, 10, 10)) == false);
+        assert!(Rect::new(10, 10, 10, 10).colliderect(&Rect::new(20, 10, 10, 10)) == false);
+        assert!(Rect::new(10, 10, 10, 10).colliderect(&Rect::new(15, 15, 10, 10)) == true);
     }
 }
