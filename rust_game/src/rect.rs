@@ -225,8 +225,24 @@ impl Rect {
     // unionall
     // unionall_ip
     // fit
-    // normalize
-    // contains
+
+    pub fn normalize(&mut self) {
+        if self.w < 0 {
+            self.x += self.w;
+            self.w *= -1;
+        }
+        if self.h < 0 {
+            self.y += self.h;
+            self.h *= -1;
+        }
+    }
+
+    pub fn contains(&self, rect: &Rect) -> bool {
+        self.get_left() <= rect.get_left()
+            && self.get_right() >= rect.get_right()
+            && self.get_top() <= rect.get_top()
+            && self.get_bottom() >= rect.get_bottom()
+    }
 
     pub fn collide_point(&self, x: i32, y: i32) -> bool {
         self.get_left() <= x
@@ -645,6 +661,43 @@ mod rect_test {
         assert!(rect5.y == 95);
         assert!(rect5.w == 20);
         assert!(rect5.h == 20);
+    }
+
+    #[test]
+    fn normalize_test() {
+        let mut rect1 = Rect::new(10, 10, 10, 10);
+        rect1.normalize();
+        assert!(rect1.x == 10);
+        assert!(rect1.y == 10);
+        assert!(rect1.w == 10);
+        assert!(rect1.h == 10);
+        let mut rect2 = Rect::new(10, 10, -10, 10);
+        rect2.normalize();
+        assert!(rect2.x == 0);
+        assert!(rect2.y == 10);
+        assert!(rect2.w == 10);
+        assert!(rect2.h == 10);
+        let mut rect3 = Rect::new(10, 10, 10, -10);
+        rect3.normalize();
+        assert!(rect3.x == 10);
+        assert!(rect3.y == 0);
+        assert!(rect3.w == 10);
+        assert!(rect3.h == 10);
+        let mut rect4 = Rect::new(10, 10, -10, -10);
+        rect4.normalize();
+        assert!(rect4.x == 0);
+        assert!(rect4.y == 0);
+        assert!(rect4.w == 10);
+        assert!(rect4.h == 10);
+    }
+
+    #[test]
+    fn contains_test() {
+        assert!(Rect::new(10, 10, 10, 10).contains(&Rect::new(10, 10, 10, 10)) == true);
+        assert!(Rect::new(10, 10, 10, 10).contains(&Rect::new(9, 10, 10, 10)) == false);
+        assert!(Rect::new(10, 10, 10, 10).contains(&Rect::new(11, 10, 10, 10)) == false);
+        assert!(Rect::new(10, 10, 10, 10).contains(&Rect::new(10, 9, 10, 10)) == false);
+        assert!(Rect::new(10, 10, 10, 10).contains(&Rect::new(10, 11, 10, 10)) == false);
     }
 
     #[test]
