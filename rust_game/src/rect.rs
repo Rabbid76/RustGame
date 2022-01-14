@@ -217,7 +217,7 @@ impl Rect {
         }
     }
 
-    pub fn clip(&self, rect: Rect) {}
+    //pub fn clip(&self, rect: Rect) {}
 
     // clipline
     // union
@@ -227,15 +227,20 @@ impl Rect {
     // fit
     // normalize
     // contains
-    // collidepoint
 
-    pub fn colliderect(&mut self, rect: &Rect) -> bool {
+    pub fn collide_point(&self, x: i32, y: i32) -> bool {
+        self.get_left() <= x
+            && x <= self.get_right()
+            && self.get_top() <= y
+            && y <= self.get_bottom()
+    }
+
+    pub fn collide_rect(&self, rect: &Rect) -> bool {
         self.get_left() < rect.get_right()
             && rect.get_left() < self.get_right()
             && self.get_top() < rect.get_bottom()
             && rect.get_top() < self.get_bottom()
     }
-    // colliderect
 
     // collidelist
     // collidelistall
@@ -643,10 +648,23 @@ mod rect_test {
     }
 
     #[test]
-    fn colliderect_test() {
-        assert!(Rect::new(10, 10, 10, 10).colliderect(&Rect::new(20, 20, 10, 10)) == false);
-        assert!(Rect::new(10, 10, 10, 10).colliderect(&Rect::new(10, 20, 10, 10)) == false);
-        assert!(Rect::new(10, 10, 10, 10).colliderect(&Rect::new(20, 10, 10, 10)) == false);
-        assert!(Rect::new(10, 10, 10, 10).colliderect(&Rect::new(15, 15, 10, 10)) == true);
+    fn collide_point_test() {
+        assert!(Rect::new(10, 10, 10, 10).collide_point(15, 15) == true);
+        assert!(Rect::new(10, 10, 10, 10).collide_point(10, 15) == true);
+        assert!(Rect::new(10, 10, 10, 10).collide_point(15, 10) == true);
+        assert!(Rect::new(10, 10, 10, 10).collide_point(20, 15) == true);
+        assert!(Rect::new(10, 10, 10, 10).collide_point(15, 20) == true);
+        assert!(Rect::new(10, 10, 10, 10).collide_point(5, 15) == false);
+        assert!(Rect::new(10, 10, 10, 10).collide_point(15, 5) == false);
+        assert!(Rect::new(10, 10, 10, 10).collide_point(25, 15) == false);
+        assert!(Rect::new(10, 10, 10, 10).collide_point(15, 25) == false);
+    }
+
+    #[test]
+    fn collide_rect_test() {
+        assert!(Rect::new(10, 10, 10, 10).collide_rect(&Rect::new(20, 20, 10, 10)) == false);
+        assert!(Rect::new(10, 10, 10, 10).collide_rect(&Rect::new(10, 20, 10, 10)) == false);
+        assert!(Rect::new(10, 10, 10, 10).collide_rect(&Rect::new(20, 10, 10, 10)) == false);
+        assert!(Rect::new(10, 10, 10, 10).collide_rect(&Rect::new(15, 15, 10, 10)) == true);
     }
 }
