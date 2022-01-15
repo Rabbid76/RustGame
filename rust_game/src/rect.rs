@@ -13,6 +13,19 @@ impl Rect {
         Rect { x, y, w, h }
     }
 
+    pub fn new_from_points(p1: (i32, i32), p2: (i32, i32)) -> Rect {
+        let x1 = cmp::min(p1.0, p2.0);
+        let y1 = cmp::min(p1.1, p2.1);
+        let x2 = cmp::max(p1.0, p2.0);
+        let y2 = cmp::max(p1.0, p2.0);
+        Rect {
+            x: x1,
+            y: y1,
+            w: x2 - x1,
+            h: y2 - y1,
+        }
+    }
+
     pub fn get_width(&self) -> i32 {
         self.w
     }
@@ -225,11 +238,31 @@ impl Rect {
             let h = cmp::min(self.get_bottom(), rect.get_bottom()) - y;
             Rect::new(x, y, w, h)
         } else {
-            Rect::new(rect.x, rect.y, 0, 0)
+            Rect::new(self.x, self.y, 0, 0)
         }
     }
 
-    // clipline
+    pub fn clip_line(
+        &self,
+        start: (i32, i32),
+        end: (i32, i32),
+    ) -> Option<((i32, i32), (i32, i32))> {
+        let line_rect = Rect::new_from_points(start, end);
+        if self.collide_rect(&line_rect) {
+            Some((
+                (
+                    start.0.clamp(self.get_left(), self.get_right()),
+                    start.1.clamp(self.get_top(), self.get_bottom()),
+                ),
+                (
+                    end.0.clamp(self.get_left(), self.get_right()),
+                    end.1.clamp(self.get_top(), self.get_bottom()),
+                ),
+            ))
+        } else {
+            None
+        }
+    }
     // union
     // union_ip
     // unionall
@@ -287,6 +320,14 @@ mod rect_test {
     fn new_test() {
         let rect = Rect::new(1, 2, 3, 4);
         assert_equal_rect(&rect, 1, 2, 3, 4);
+    }
+
+    #[test]
+    fn new_form_points_test() {
+        assert_equal_rect(&Rect::new_from_points((10, 10), (20, 20)), 10, 10, 10, 10);
+        assert_equal_rect(&Rect::new_from_points((20, 10), (10, 20)), 10, 10, 10, 10);
+        assert_equal_rect(&Rect::new_from_points((10, 20), (20, 10)), 10, 10, 10, 10);
+        assert_equal_rect(&Rect::new_from_points((20, 20), (10, 10)), 10, 10, 10, 10);
     }
 
     #[test]
@@ -607,8 +648,26 @@ mod rect_test {
 
     #[test]
     fn clip_test() {
-        let rect1 = Rect::new(10, 10, 10, 10).clip(&Rect::new(15, 15, 5, 5));
+        let rect1 = Rect::new(15, 15, 5, 5).clip(&Rect::new(10, 10, 10, 10));
         assert_equal_rect(&rect1, 15, 15, 5, 5);
+        let rect2 = Rect::new(8, 15, 5, 5).clip(&Rect::new(10, 10, 10, 10));
+        assert_equal_rect(&rect2, 10, 15, 3, 5);
+        let rect3 = Rect::new(15, 8, 5, 5).clip(&Rect::new(10, 10, 10, 10));
+        assert_equal_rect(&rect3, 15, 10, 5, 3);
+        let rect4 = Rect::new(18, 15, 5, 5).clip(&Rect::new(10, 10, 10, 10));
+        assert_equal_rect(&rect4, 18, 15, 2, 5);
+        let rect5 = Rect::new(15, 18, 5, 5).clip(&Rect::new(10, 10, 10, 10));
+        assert_equal_rect(&rect5, 15, 18, 5, 2);
+        let rect6 = Rect::new(25, 25, 5, 5).clip(&Rect::new(10, 10, 10, 10));
+        assert_equal_rect(&rect6, 25, 25, 0, 0);
+    }
+
+    #[test]
+    fn clip_line_test() {
+        assert!(Rect::new(10, 10, 10, 10).clip_line((20, 20), (30, 30)) == None);
+        assert!(Rect::new(10, 10, 10, 10).clip_line((0, 0), (30, 30)) == Some(((10, 10), (20, 20))));
+        assert!(Rect::new(10, 10, 10, 10).clip_line((30, 0), (0, 30)) == Some(((20, 10), (10, 20))));
+        assert!(Rect::new(10, 10, 10, 10).clip_line((0, 30), (30, 0)) == Some(((10, 20), (20, 10))));
     }
 
     #[test]
