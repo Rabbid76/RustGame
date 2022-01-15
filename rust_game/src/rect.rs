@@ -217,7 +217,17 @@ impl Rect {
         }
     }
 
-    //pub fn clip(&self, rect: Rect) {}
+    pub fn clip(&self, rect: &Rect) -> Rect {
+        if self.collide_rect(rect) {
+            let x = cmp::max(self.x, rect.x);
+            let y = cmp::max(self.y, rect.y);
+            let w = cmp::min(self.get_right(), rect.get_right()) - x;
+            let h = cmp::min(self.get_bottom(), rect.get_bottom()) - y;
+            Rect::new(x, y, w, h)
+        } else {
+            Rect::new(rect.x, rect.y, 0, 0)
+        }
+    }
 
     // clipline
     // union
@@ -266,22 +276,23 @@ impl Rect {
 mod rect_test {
     use super::*;
 
+    fn assert_equal_rect(rect: &Rect, x: i32, y: i32, w: i32, h: i32) {
+        assert!(rect.x == x);
+        assert!(rect.y == y);
+        assert!(rect.w == w);
+        assert!(rect.h == h);
+    }
+
     #[test]
     fn new_test() {
         let rect = Rect::new(1, 2, 3, 4);
-        assert!(rect.x == 1);
-        assert!(rect.y == 2);
-        assert!(rect.w == 3);
-        assert!(rect.h == 4);
+        assert_equal_rect(&rect, 1, 2, 3, 4);
     }
 
     #[test]
     fn copy_test() {
         let rect = Rect::new(1, 2, 3, 4).clone();
-        assert!(rect.x == 1);
-        assert!(rect.y == 2);
-        assert!(rect.w == 3);
-        assert!(rect.h == 4);
+        assert_equal_rect(&rect, 1, 2, 3, 4);
     }
 
     #[test]
@@ -294,10 +305,7 @@ mod rect_test {
     fn set_width_test() {
         let mut rect = Rect::new(4, 5, 6, 7);
         rect.set_width(1);
-        assert!(rect.x == 4);
-        assert!(rect.y == 5);
-        assert!(rect.w == 1);
-        assert!(rect.h == 7);
+        assert_equal_rect(&rect, 4, 5, 1, 7);
     }
 
     #[test]
@@ -310,10 +318,7 @@ mod rect_test {
     fn set_height_test() {
         let mut rect = Rect::new(4, 5, 6, 7);
         rect.set_height(1);
-        assert!(rect.x == 4);
-        assert!(rect.y == 5);
-        assert!(rect.w == 6);
-        assert!(rect.h == 1);
+        assert_equal_rect(&rect, 4, 5, 6, 1);
     }
 
     #[test]
@@ -326,10 +331,7 @@ mod rect_test {
     fn set_left_test() {
         let mut rect = Rect::new(4, 5, 6, 7);
         rect.set_left(1);
-        assert!(rect.x == 1);
-        assert!(rect.y == 5);
-        assert!(rect.w == 6);
-        assert!(rect.h == 7);
+        assert_equal_rect(&rect, 1, 5, 6, 7);
     }
 
     #[test]
@@ -342,10 +344,7 @@ mod rect_test {
     fn set_right_test() {
         let mut rect = Rect::new(4, 5, 6, 7);
         rect.set_right(1);
-        assert!(rect.x == -5);
-        assert!(rect.y == 5);
-        assert!(rect.w == 6);
-        assert!(rect.h == 7);
+        assert_equal_rect(&rect, -5, 5, 6, 7);
     }
 
     #[test]
@@ -358,10 +357,7 @@ mod rect_test {
     fn set_top_test() {
         let mut rect = Rect::new(4, 5, 6, 7);
         rect.set_top(1);
-        assert!(rect.x == 4);
-        assert!(rect.y == 1);
-        assert!(rect.w == 6);
-        assert!(rect.h == 7);
+        assert_equal_rect(&rect, 4, 1, 6, 7);
     }
 
     #[test]
@@ -374,10 +370,7 @@ mod rect_test {
     fn set_bottom_test() {
         let mut rect = Rect::new(4, 5, 6, 7);
         rect.set_bottom(1);
-        assert!(rect.x == 4);
-        assert!(rect.y == -6);
-        assert!(rect.w == 6);
-        assert!(rect.h == 7);
+        assert_equal_rect(&rect, 4, -6, 6, 7);
     }
 
     #[test]
@@ -390,10 +383,7 @@ mod rect_test {
     fn set_center_x_test() {
         let mut rect = Rect::new(4, 5, 6, 7);
         rect.set_center_x(1);
-        assert!(rect.x == -2);
-        assert!(rect.y == 5);
-        assert!(rect.w == 6);
-        assert!(rect.h == 7);
+        assert_equal_rect(&rect, -2, 5, 6, 7);
     }
 
     #[test]
@@ -406,10 +396,7 @@ mod rect_test {
     fn set_center_y_test() {
         let mut rect = Rect::new(4, 5, 6, 7);
         rect.set_center_y(1);
-        assert!(rect.x == 4);
-        assert!(rect.y == -2);
-        assert!(rect.w == 6);
-        assert!(rect.h == 7);
+        assert_equal_rect(&rect, 4, -2, 6, 7);
     }
 
     #[test]
@@ -555,140 +542,89 @@ mod rect_test {
     #[test]
     fn move_test() {
         let rect = Rect::new(0, 0, 1, 2).move_(5, 10);
-        assert!(rect.x == 5);
-        assert!(rect.y == 10);
-        assert!(rect.w == 1);
-        assert!(rect.h == 2);
+        assert_equal_rect(&rect, 5, 10, 1, 2);
     }
 
     #[test]
     fn move_ip_test() {
         let mut rect = Rect::new(0, 0, 1, 2);
         rect.move_ip(5, 10);
-        assert!(rect.x == 5);
-        assert!(rect.y == 10);
-        assert!(rect.w == 1);
-        assert!(rect.h == 2);
+        assert_equal_rect(&rect, 5, 10, 1, 2);
     }
 
     #[test]
     fn inflate_test() {
         let rect = Rect::new(0, 0, 1, 2).inflate(8, 10);
-        assert!(rect.x == -4);
-        assert!(rect.y == -5);
-        assert!(rect.w == 9);
-        assert!(rect.h == 12);
+        assert_equal_rect(&rect, -4, -5, 9, 12);
     }
 
     #[test]
     fn inflate_ip_test() {
         let mut rect = Rect::new(0, 0, 1, 2);
         rect.inflate_ip(8, 10);
-        assert!(rect.x == -4);
-        assert!(rect.y == -5);
-        assert!(rect.w == 9);
-        assert!(rect.h == 12);
+        assert_equal_rect(&rect, -4, -5, 9, 12);
     }
 
     #[test]
     fn update_test() {
         let mut rect = Rect::new(0, 0, 0, 0);
         rect.update(1, 2, 3, 4);
-        assert!(rect.x == 1);
-        assert!(rect.y == 2);
-        assert!(rect.w == 3);
-        assert!(rect.h == 4);
+        assert_equal_rect(&rect, 1, 2, 3, 4);
     }
 
     #[test]
     fn clamp_test() {
         let rect1 = Rect::new(10, 20, 10, 10).clamp(&Rect::new(20, 20, 100, 100));
-        assert!(rect1.x == 20);
-        assert!(rect1.y == 20);
-        assert!(rect1.w == 10);
-        assert!(rect1.h == 10);
+        assert_equal_rect(&rect1, 20, 20, 10, 10);
         let rect2 = Rect::new(10, 20, 10, 10).clamp(&Rect::new(20, 20, 100, 100));
-        assert!(rect2.x == 20);
-        assert!(rect2.y == 20);
-        assert!(rect2.w == 10);
-        assert!(rect2.h == 10);
+        assert_equal_rect(&rect2, 20, 20, 10, 10);
         let rect3 = Rect::new(200, 20, 10, 10).clamp(&Rect::new(20, 20, 100, 100));
-        assert!(rect3.x == 110);
-        assert!(rect3.y == 20);
-        assert!(rect3.w == 10);
-        assert!(rect3.h == 10);
+        assert_equal_rect(&rect3, 110, 20, 10, 10);
         let rect4 = Rect::new(20, 200, 10, 10).clamp(&Rect::new(20, 20, 100, 100));
-        assert!(rect4.x == 20);
-        assert!(rect4.y == 110);
-        assert!(rect4.w == 10);
-        assert!(rect4.h == 10);
+        assert_equal_rect(&rect4, 20, 110, 10, 10);
         let rect5 = Rect::new(20, 20, 20, 20).clamp(&Rect::new(100, 100, 10, 10));
-        assert!(rect5.x == 95);
-        assert!(rect5.y == 95);
-        assert!(rect5.w == 20);
-        assert!(rect5.h == 20);
+        assert_equal_rect(&rect5, 95, 95, 20, 20);
     }
 
     #[test]
     fn clamp_ip_test() {
         let mut rect1 = Rect::new(10, 20, 10, 10);
         rect1.clamp_ip(&Rect::new(20, 20, 100, 100));
-        assert!(rect1.x == 20);
-        assert!(rect1.y == 20);
-        assert!(rect1.w == 10);
-        assert!(rect1.h == 10);
+        assert_equal_rect(&rect1, 20, 20, 10, 10);
         let mut rect2 = Rect::new(20, 10, 10, 10);
         rect2.clamp_ip(&Rect::new(20, 20, 100, 100));
-        assert!(rect2.x == 20);
-        assert!(rect2.y == 20);
-        assert!(rect2.w == 10);
-        assert!(rect2.h == 10);
+        assert_equal_rect(&rect2, 20, 20, 10, 10);
         let mut rect3 = Rect::new(200, 20, 10, 10);
         rect3.clamp_ip(&Rect::new(20, 20, 100, 100));
-        assert!(rect3.x == 110);
-        assert!(rect3.y == 20);
-        assert!(rect3.w == 10);
-        assert!(rect3.h == 10);
+        assert_equal_rect(&rect3, 110, 20, 10, 10);
         let mut rect4 = Rect::new(10, 200, 10, 10);
         rect4.clamp_ip(&Rect::new(20, 20, 100, 100));
-        assert!(rect4.x == 20);
-        assert!(rect4.y == 110);
-        assert!(rect4.w == 10);
-        assert!(rect4.h == 10);
+        assert_equal_rect(&rect4, 20, 110, 10, 10);
         let mut rect5 = Rect::new(200, 200, 20, 20);
         rect5.clamp_ip(&Rect::new(100, 100, 10, 10));
-        assert!(rect5.x == 95);
-        assert!(rect5.y == 95);
-        assert!(rect5.w == 20);
-        assert!(rect5.h == 20);
+        assert_equal_rect(&rect5, 95, 95, 20, 20);
+    }
+
+    #[test]
+    fn clip_test() {
+        let rect1 = Rect::new(10, 10, 10, 10).clip(&Rect::new(15, 15, 5, 5));
+        assert_equal_rect(&rect1, 15, 15, 5, 5);
     }
 
     #[test]
     fn normalize_test() {
         let mut rect1 = Rect::new(10, 10, 10, 10);
         rect1.normalize();
-        assert!(rect1.x == 10);
-        assert!(rect1.y == 10);
-        assert!(rect1.w == 10);
-        assert!(rect1.h == 10);
+        assert_equal_rect(&rect1, 10, 10, 10, 10);
         let mut rect2 = Rect::new(10, 10, -10, 10);
         rect2.normalize();
-        assert!(rect2.x == 0);
-        assert!(rect2.y == 10);
-        assert!(rect2.w == 10);
-        assert!(rect2.h == 10);
+        assert_equal_rect(&rect2, 00, 10, 10, 10);
         let mut rect3 = Rect::new(10, 10, 10, -10);
         rect3.normalize();
-        assert!(rect3.x == 10);
-        assert!(rect3.y == 0);
-        assert!(rect3.w == 10);
-        assert!(rect3.h == 10);
+        assert_equal_rect(&rect3, 10, 0, 10, 10);
         let mut rect4 = Rect::new(10, 10, -10, -10);
         rect4.normalize();
-        assert!(rect4.x == 0);
-        assert!(rect4.y == 0);
-        assert!(rect4.w == 10);
-        assert!(rect4.h == 10);
+        assert_equal_rect(&rect4, 0, 0, 10, 10);
     }
 
     #[test]
