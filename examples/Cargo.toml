@@ -1,0 +1,16 @@
+[package]
+name = "example"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+# https://docs.rs/sdl2/latest/sdl2/
+# https://github.com/Rust-SDL2/rust-sdl2
+sdl2 = "0.35.1"
+
+[[bin]]
+name = "sdl_example"
+path = "src/sdl_example/main.rs"
