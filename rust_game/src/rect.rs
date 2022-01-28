@@ -665,9 +665,15 @@ mod rect_test {
     #[test]
     fn clip_line_test() {
         assert!(Rect::new(10, 10, 10, 10).clip_line((20, 20), (30, 30)) == None);
-        assert!(Rect::new(10, 10, 10, 10).clip_line((0, 0), (30, 30)) == Some(((10, 10), (20, 20))));
-        assert!(Rect::new(10, 10, 10, 10).clip_line((30, 0), (0, 30)) == Some(((20, 10), (10, 20))));
-        assert!(Rect::new(10, 10, 10, 10).clip_line((0, 30), (30, 0)) == Some(((10, 20), (20, 10))));
+        assert!(
+            Rect::new(10, 10, 10, 10).clip_line((0, 0), (30, 30)) == Some(((10, 10), (20, 20)))
+        );
+        assert!(
+            Rect::new(10, 10, 10, 10).clip_line((30, 0), (0, 30)) == Some(((20, 10), (10, 20)))
+        );
+        assert!(
+            Rect::new(10, 10, 10, 10).clip_line((0, 30), (30, 0)) == Some(((10, 20), (20, 10)))
+        );
     }
 
     #[test]

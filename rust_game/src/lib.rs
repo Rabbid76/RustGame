@@ -1,4 +1,6 @@
+pub mod context;
 pub mod rect;
+pub mod window;
 
 #[cfg(test)]
 mod tests {
