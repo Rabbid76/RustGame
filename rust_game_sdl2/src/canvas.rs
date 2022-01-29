@@ -1,5 +1,6 @@
 use crate::context::Sdl2Context;
 use rust_game::canvas::Canvas;
+use rust_game::color::Color;
 use std::error::Error;
 extern crate sdl2;
 
@@ -22,5 +23,11 @@ impl Sdl2Canvas {
 impl Canvas for Sdl2Canvas {
     fn update(&mut self) {
         self.canvas.present();
+    }
+
+    fn fill(&mut self, color: &dyn Color) {
+        self.canvas
+            .set_draw_color(sdl2::pixels::Color::RGB(color.r(), color.g(), color.b()));
+        self.canvas.clear();
     }
 }

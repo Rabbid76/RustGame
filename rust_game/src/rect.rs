@@ -1,5 +1,7 @@
 use std::cmp;
 
+// TODO trait Rect
+
 #[derive(Clone)]
 pub struct Rect {
     pub x: i32,

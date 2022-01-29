@@ -1,5 +1,6 @@
 // TODO: https://docs.rs/crate/sdl2/0.22.0/source/README.md
 
+use rust_game::color::ColorU8;
 use rust_game::context::Context;
 use rust_game_sdl2::context::Sdl2Context;
 
@@ -18,7 +19,7 @@ pub fn main() {
     let mut i = 0;
     'running: loop {
         i = (i + 1) % 255;
-        
+
         for event in event_pump.poll_iter() {
             match event {
                 Event::Quit { .. }
@@ -29,9 +30,9 @@ pub fn main() {
                 _ => {}
             }
         }
-        
-        //canvas.set_draw_color(Color::RGB(i, 64, 255 - i));
-        //canvas.clear();
+
+        canvas.fill(&ColorU8::new_rgb(i, 64, 255-i));
+       
 
         canvas.update();
         ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
