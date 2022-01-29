@@ -1,2 +1,2 @@
+mod canvas;
 pub mod context;
-mod window;
