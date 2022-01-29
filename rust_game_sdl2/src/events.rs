@@ -2,6 +2,7 @@ use crate::context::Sdl2Context;
 use rust_game::events::{Event, Events};
 use std::error::Error;
 extern crate sdl2;
+use num_traits::FromPrimitive;
 
 pub struct Sdl2Events {
     pub sdl_event_pump: sdl2::EventPump,
@@ -25,11 +26,13 @@ impl Events for Sdl2Events {
                     keycode: Some(key), ..
                 } => events.push(Event::KeyDown {
                     key_code: key as i32,
+                    key: FromPrimitive::from_i32(key as i32),
                 }),
                 sdl2::event::Event::KeyUp {
                     keycode: Some(key), ..
                 } => events.push(Event::KeyDown {
                     key_code: key as i32,
+                    key: FromPrimitive::from_i32(key as i32),
                 }),
                 _ => {}
             }

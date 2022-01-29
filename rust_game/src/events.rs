@@ -1,7 +1,9 @@
+use crate::keys::KeyCode;
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Event {
     Quit {},
-    KeyDown { key_code: i32 },
+    KeyDown { key_code: i32, key: Option<KeyCode> },
     KeyUp { key_code: i32 },
 }
 

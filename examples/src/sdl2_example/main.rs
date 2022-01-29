@@ -20,9 +20,9 @@ pub fn main() {
         for event in events.get() {
             match event {
                 Event::Quit { .. } => break 'running,
-                Event::KeyDown { key_code: 27, .. } => break 'running,
-                Event::KeyDown { key_code, .. } => {
-                    println!("{}", key_code)
+                Event::KeyDown { key: Some(KeyCode::ESC), .. } => break 'running,
+                Event::KeyDown { key_code, key } => {
+                    println!("{}, {:?}", key_code, key)
                 }
                 _ => {}
             }

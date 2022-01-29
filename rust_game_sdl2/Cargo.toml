@@ -12,3 +12,6 @@ rust_game = { path = "../rust_game" }
 # https://docs.rs/crate/sdl2/0.22.0/source/README.md
 # https://github.com/Rust-SDL2/rust-sdl2
 sdl2 = "0.35.1"
+
+num-traits = "0.2.x"
+num-derive = "0.3.x"
