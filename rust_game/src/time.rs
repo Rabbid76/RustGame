@@ -21,7 +21,6 @@ impl TimeStd {
 }
 
 impl Time for TimeStd {
-    
     fn get_ticks(&self) -> f64 {
         let duration = Instant::now() - self.context_data.initialization_time;
         duration.as_micros() as f64 / 1000.0
@@ -44,7 +43,6 @@ pub struct Clock {
 }
 
 impl Clock {
-
     fn initialize_tick(&mut self) -> f64 {
         self.frames = 1;
         let time_now = Instant::now();

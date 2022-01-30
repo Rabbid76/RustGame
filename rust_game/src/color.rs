@@ -38,6 +38,102 @@ impl ColorRGBA<u8> {
             rgba: [grayscale, grayscale, grayscale, 255],
         }
     }
+
+    // TODO: HSL/HSV color module
+
+    fn f32_to_u8(c: f32) -> u8 {
+        ((c * 255.0).round() as i32).clamp(0, 255) as u8
+    }
+
+    fn hue_to_rgb(h: f32) -> (f32, f32, f32) {
+        (
+            ((h * 6.0 - 3.0).abs() - 1.0).clamp(0.0, 1.0),
+            (2.0 - (h * 6.0 - 2.0).abs()).clamp(0.0, 1.0),
+            (2.0 - (h * 6.0 - 4.0).abs()).clamp(0.0, 1.0),
+        )
+    }
+
+    pub fn from_hue(hue: u16) -> ColorU8 {
+        let rgb = ColorRGBA::hue_to_rgb((hue % 360) as f32 / 360.0);
+        ColorU8 {
+            rgba: [
+                ColorRGBA::f32_to_u8(rgb.0),
+                ColorRGBA::f32_to_u8(rgb.1),
+                ColorRGBA::f32_to_u8(rgb.2),
+                255,
+            ],
+        }
+    }
+
+    pub fn from_hue_alpha(hue: u16, alpha: u8) -> ColorU8 {
+        let rgb = ColorRGBA::hue_to_rgb((hue % 360) as f32 / 360.0);
+        ColorU8 {
+            rgba: [
+                ColorRGBA::f32_to_u8(rgb.0),
+                ColorRGBA::f32_to_u8(rgb.1),
+                ColorRGBA::f32_to_u8(rgb.2),
+                (alpha as f32 * 255.0 / 100.0).round() as u8,
+            ],
+        }
+    }
+
+    pub fn from_hsv(hue: u16, saturation: u8, value: u8) -> ColorU8 {
+        let rgb = ColorRGBA::hue_to_rgb((hue % 360) as f32 / 360.0);
+        let s = saturation as f32 / 100.0;
+        let v = value as f32 / 100.0;
+        ColorU8 {
+            rgba: [
+                ColorRGBA::f32_to_u8(((rgb.0 - 1.0) * s + 1.0) * v),
+                ColorRGBA::f32_to_u8(((rgb.1 - 1.0) * s + 1.0) * v),
+                ColorRGBA::f32_to_u8(((rgb.2 - 1.0) * s + 1.0) * v),
+                255,
+            ],
+        }
+    }
+
+    pub fn from_hsv_alpha(hue: u16, saturation: u8, value: u8, alpha: u8) -> ColorU8 {
+        let rgb = ColorRGBA::hue_to_rgb((hue % 360) as f32 / 360.0);
+        let s = saturation as f32 / 100.0;
+        let v = value as f32 / 100.0;
+        ColorU8 {
+            rgba: [
+                ColorRGBA::f32_to_u8(((rgb.0 - 1.0) * s + 1.0) * v),
+                ColorRGBA::f32_to_u8(((rgb.1 - 1.0) * s + 1.0) * v),
+                ColorRGBA::f32_to_u8(((rgb.2 - 1.0) * s + 1.0) * v),
+                (alpha as f32 * 255.0 / 100.0).round() as u8,
+            ],
+        }
+    }
+
+    pub fn from_hsl(hue: u16, saturation: u8, lightness: u8) -> ColorU8 {
+        let rgb = ColorRGBA::hue_to_rgb((hue % 360) as f32 / 360.0);
+        let s = saturation as f32 / 100.0;
+        let l = lightness as f32 / 100.0;
+        let c = (1.0 - (2.0 * l - 1.0).abs()) * s;
+        ColorU8 {
+            rgba: [
+                ColorRGBA::f32_to_u8(((rgb.0 - 0.5) * c) + l),
+                ColorRGBA::f32_to_u8(((rgb.1 - 0.5) * c) + l),
+                ColorRGBA::f32_to_u8(((rgb.2 - 0.5) * c) + l),
+                255,
+            ],
+        }
+    }
+
+    pub fn from_hsl_alpha(hue: u16, saturation: u8, lightness: u8, alpha: u8) -> ColorU8 {
+        let rgb = ColorRGBA::hue_to_rgb((hue % 360) as f32 / 360.0);
+        let s = saturation as f32 / 100.0;
+        let l = lightness as f32 / 100.0;
+        let c = (1.0 - (2.0 * l - 1.0).abs()) * s;
+        ColorU8 {
+            rgba: [
+                ColorRGBA::f32_to_u8(((rgb.0 - 0.5) * c) + l),
+                ColorRGBA::f32_to_u8(((rgb.1 - 0.5) * c) + l),
+                ColorRGBA::f32_to_u8(((rgb.2 - 0.5) * c) + l),
+                (alpha as f32 * 255.0 / 100.0).round() as u8,
+            ],
+        }
+    }
 }
 
 impl Color for ColorRGBA<u8> {
@@ -113,5 +209,41 @@ mod test_color_u8 {
         let mut color = ColorU8::new_gray(128);
         color.set(&ColorU8::new(128, 96, 64, 32));
         assert_eq!(ColorU8::new(128, 96, 64, 32), color);
+    }
+
+    #[test]
+    fn color_from_hue() {
+        let color = ColorU8::from_hue(180);
+        assert_eq!(ColorU8::new(0, 255, 255, 255), color);
+    }
+
+    #[test]
+    fn color_from_hue_alpha() {
+        let color = ColorU8::from_hue_alpha(180, 50);
+        assert_eq!(ColorU8::new(0, 255, 255, 128), color);
+    }
+
+    #[test]
+    fn color_from_hsv() {
+        let color = ColorU8::from_hsv(180, 100, 50);
+        assert_eq!(ColorU8::new(0, 128, 128, 255), color);
+    }
+
+    #[test]
+    fn color_from_hsv_alpha() {
+        let color = ColorU8::from_hsv_alpha(180, 100, 50, 50);
+        assert_eq!(ColorU8::new(0, 128, 128, 128), color);
+    }
+
+    #[test]
+    fn color_from_hsl() {
+        let color = ColorU8::from_hsl(180, 50, 50);
+        assert_eq!(ColorU8::new(64, 191, 191, 255), color);
+    }
+
+    #[test]
+    fn color_from_hsl_alpha() {
+        let color = ColorU8::from_hsl_alpha(180, 50, 50, 50);
+        assert_eq!(ColorU8::new(64, 191, 191, 128), color);
     }
 }
