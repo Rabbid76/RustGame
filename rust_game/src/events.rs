@@ -12,7 +12,7 @@ pub trait Events {
 }
 
 #[cfg(test)]
-mod context_test {
+mod event_test {
     use super::*;
 
     struct EventMock {}

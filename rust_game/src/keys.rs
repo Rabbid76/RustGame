@@ -1,5 +1,5 @@
-use num_derive::{FromPrimitive, ToPrimitive};
 use keycodes;
+use num_derive::{FromPrimitive, ToPrimitive};
 
 #[derive(Debug, Clone, PartialEq, FromPrimitive, ToPrimitive)]
 #[repr(i32)]

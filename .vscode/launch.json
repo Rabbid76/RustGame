@@ -22,6 +22,62 @@
             },
             "args": [],
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'sdl2_example'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=sdl2_example",
+                    "--package=example"
+                ],
+                "filter": {
+                    "name": "sdl2_example",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'sdl2_example'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=sdl2_example",
+                    "--package=example"
+                ],
+                "filter": {
+                    "name": "sdl2_example",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'rust_game_sdl2'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=rust_game_sdl2"
+                ],
+                "filter": {
+                    "name": "rust_game_sdl2",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }

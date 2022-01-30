@@ -22,9 +22,9 @@ Install OpenCV from [OpenCV releases](https://opencv.org/releases/)
 
 Set the following environment variables:
 
-| environment variable | path                        |
-|----------------------|-----------------------------|
-| OPENCV_INCLUDE_PATHS | .\opencv\build\include      |
-| OPENCV_LINK_PATHS    | .\opencv\build\x64\vcXX\lib |
-| OPENCV_LINK_LIBS     | opencv_world4XX             |
-| (add to) PATH        | .\opencv\build\x64\vc15\bin |
+| environment variable   | path                        |
+|------------------------|-----------------------------|
+| `OPENCV_INCLUDE_PATHS` | .\opencv\build\include      |
+| `OPENCV_LINK_PATHS`    | .\opencv\build\x64\vcXX\lib |
+| `OPENCV_LINK_LIBS`     | opencv_world4XX             |
+| (add to) `PATH`        | .\opencv\build\x64\vc15\bin |
