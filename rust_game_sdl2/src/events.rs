@@ -1,25 +1,26 @@
 use crate::context::Sdl2Context;
 use rust_game::events::{Event, Events};
 use std::error::Error;
+use std::sync::Arc;
 extern crate sdl2;
 use num_traits::FromPrimitive;
 
 pub struct Sdl2Events {
-    pub sdl_event_pump: sdl2::EventPump,
+    sdl_context: Arc<sdl2::Sdl>,
 }
 
 impl Sdl2Events {
     pub fn from(context: &Sdl2Context) -> Result<Sdl2Events, Box<dyn Error>> {
         Ok(Sdl2Events {
-            sdl_event_pump: context.sdl_context.event_pump()?,
+            sdl_context: context.sdl_context.clone(),
         })
     }
 }
 
 impl Events for Sdl2Events {
-    fn get(&mut self) -> Vec<Event> {
+    fn get(&mut self) -> Result<Vec<Event>, Box<dyn Error>> {
         let mut events = Vec::new();
-        for event in self.sdl_event_pump.poll_iter() {
+        for event in self.sdl_context.event_pump()?.poll_iter() {
             match event {
                 sdl2::event::Event::Quit { .. } => events.push(Event::Quit {}),
                 sdl2::event::Event::KeyDown {
@@ -37,6 +38,6 @@ impl Events for Sdl2Events {
                 _ => {}
             }
         }
-        events
+        Ok(events)
     }
 }

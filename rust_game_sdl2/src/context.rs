@@ -5,13 +5,12 @@ use rust_game::context::{Context, ContextData};
 use rust_game::events::Events;
 use rust_game::time::{Time, TimeStd};
 use std::error::Error;
-use std::rc::Rc;
 use std::sync::Arc;
 
 extern crate sdl2;
 
 pub struct Sdl2Context {
-    pub sdl_context: Rc<sdl2::Sdl>,
+    pub sdl_context: Arc<sdl2::Sdl>,
     pub video_subsystem: sdl2::VideoSubsystem,
     pub context_data: Arc<ContextData>,
 }
@@ -21,7 +20,7 @@ impl Sdl2Context {
         let sdl_context = sdl2::init()?;
         let video_subsystem = sdl_context.video()?;
         Ok(Sdl2Context {
-            sdl_context: Rc::new(sdl_context),
+            sdl_context: Arc::new(sdl_context),
             video_subsystem,
             context_data: Arc::new(ContextData::new()),
         })

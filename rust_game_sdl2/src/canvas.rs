@@ -1,11 +1,15 @@
 use crate::context::Sdl2Context;
+use crate::surface::Sdl2Surface;
 use rust_game::canvas::Canvas;
-use rust_game::color::Color;
+use rust_game::surface::Surface;
 use std::error::Error;
+use std::sync::Arc;
 extern crate sdl2;
 
 pub struct Sdl2Canvas {
-    canvas: sdl2::render::WindowCanvas,
+    pub sdl_context: Arc<sdl2::Sdl>,
+    pub window: sdl2::video::Window,
+    pub canvas_surface: Sdl2Surface,
 }
 
 impl Sdl2Canvas {
@@ -15,19 +19,33 @@ impl Sdl2Canvas {
             .window("rust-sdl2 demo", 800, 600)
             .position_centered()
             .build()?;
-        let canvas = window.into_canvas().build()?;
-        Ok(Sdl2Canvas { canvas })
+        let event_pump = context.sdl_context.event_pump()?;
+        let window_surface = window.surface(&event_pump)?;
+        let canvas_surface = sdl2::surface::Surface::new(
+            window_surface.width(),
+            window_surface.height(),
+            sdl2::pixels::PixelFormatEnum::ABGR8888,
+        )?;
+        Ok(Sdl2Canvas {
+            sdl_context: context.sdl_context.clone(),
+            window,
+            canvas_surface: Sdl2Surface::from_surface(canvas_surface),
+        })
     }
 }
 
 impl Canvas for Sdl2Canvas {
-    fn update(&mut self) {
-        self.canvas.present();
+    fn get_surface(&mut self) -> Box<&mut dyn Surface> {
+        Box::new(&mut self.canvas_surface)
     }
 
-    fn fill(&mut self, color: &dyn Color) {
-        self.canvas
-            .set_draw_color(sdl2::pixels::Color::RGB(color.r(), color.g(), color.b()));
-        self.canvas.clear();
+    fn update(&mut self) -> Result<(), Box<dyn Error>> {
+        let event_pump = self.sdl_context.event_pump()?;
+        let mut window_surface = self.window.surface(&event_pump)?;
+        self.canvas_surface
+            .surface
+            .blit(Option::None, &mut window_surface, Option::None)?;
+        window_surface.update_window()?;
+        Ok(())
     }
 }

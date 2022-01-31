@@ -1,18 +1,21 @@
-use crate::color::Color;
+use crate::surface::Surface;
+use std::error::Error;
 
 pub trait Canvas {
-    fn update(&mut self);
-    fn fill(&mut self, color: &dyn Color);
+    fn get_surface(&mut self) -> Box<&mut dyn Surface>;
+    fn update(&mut self) -> Result<(), Box<dyn Error>>;
 }
 
 #[cfg(test)]
 mod canvas_test {
     use super::*;
-    use crate::color::ColorU8;
+    use crate::color::{Color, ColorU8};
+    use crate::test::SurfaceMock;
 
     struct CanvasMock {
         pub fill_color: ColorU8,
         pub canvas_color: ColorU8,
+        pub canvas_surface: SurfaceMock,
     }
 
     impl CanvasMock {
@@ -20,17 +23,22 @@ mod canvas_test {
             CanvasMock {
                 fill_color: ColorU8::new_gray(0),
                 canvas_color: ColorU8::new_gray(0),
+                canvas_surface: SurfaceMock::new(),
             }
-        }
-    }
-
-    impl Canvas for CanvasMock {
-        fn update(&mut self) {
-            self.canvas_color = self.fill_color.clone();
         }
 
         fn fill(&mut self, color: &dyn Color) {
             self.fill_color.set(color);
+        }
+    }
+
+    impl Canvas for CanvasMock {
+        fn get_surface(&mut self) -> Box<&mut dyn Surface> {
+            Box::new(&mut self.canvas_surface)
+        }
+        fn update(&mut self) -> Result<(), Box<dyn Error>> {
+            self.canvas_color = self.fill_color.clone();
+            Ok(())
         }
     }
 
@@ -45,7 +53,7 @@ mod canvas_test {
     fn test_update() {
         let mut canvas = CanvasMock::new();
         canvas.fill(&ColorU8::new_rgb(128, 32, 64));
-        canvas.update();
+        canvas.update().unwrap();
         assert_eq!(ColorU8::new(128, 32, 64, 255), canvas.canvas_color);
     }
 }

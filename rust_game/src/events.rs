@@ -1,4 +1,5 @@
 use crate::keys::KeyCode;
+use std::error::Error;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Event {
@@ -8,7 +9,7 @@ pub enum Event {
 }
 
 pub trait Events {
-    fn get(&mut self) -> Vec<Event>;
+    fn get(&mut self) -> Result<Vec<Event>, Box<dyn Error>>;
 }
 
 #[cfg(test)]
@@ -18,8 +19,8 @@ mod event_test {
     struct EventMock {}
 
     impl Events for EventMock {
-        fn get(&mut self) -> Vec<Event> {
-            vec![]
+        fn get(&mut self) -> Result<Vec<Event>, Box<dyn Error>> {
+            Ok(vec![])
         }
     }
 }

@@ -13,13 +13,13 @@ pub fn main() {
     let time = context.time().unwrap();
     let mut clock = time.new_clock();
 
-    let mut i : u16 = 0;
+    let mut i: u16 = 0;
     'running: loop {
         let delta = clock.tick_frame_rate(100);
         let current = time.get_ticks();
         println!("{}, {}", delta, current);
 
-        for event in events.get() {
+        for event in events.get().unwrap() {
             match event {
                 Event::Quit { .. } => break 'running,
                 Event::KeyDown {
@@ -34,8 +34,11 @@ pub fn main() {
         }
 
         i = (i + 1) % 360;
-        canvas.fill(&ColorU8::from_hsl(i, 100, 50));
+        canvas
+            .get_surface()
+            .fill(&ColorU8::from_hsl(i, 100, 50))
+            .unwrap();
 
-        canvas.update();
+        canvas.update().unwrap();
     }
 }
