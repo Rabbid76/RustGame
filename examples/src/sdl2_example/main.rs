@@ -1,5 +1,3 @@
-// TODO: https://docs.rs/crate/sdl2/0.22.0/source/README.md
-
 use rust_game::color::ColorU8;
 use rust_game::context::Context;
 use rust_game::events::Event;

@@ -35,8 +35,8 @@ impl Sdl2Canvas {
 }
 
 impl Canvas for Sdl2Canvas {
-    fn get_surface(&mut self) -> Box<&mut dyn Surface> {
-        Box::new(&mut self.canvas_surface)
+    fn get_surface(&mut self) -> &mut dyn Surface {
+        &mut self.canvas_surface
     }
 
     fn update(&mut self) -> Result<(), Box<dyn Error>> {
