@@ -1,5 +1,6 @@
 use crate::color::{Color, ColorU8};
-use crate::surface::Surface;
+use crate::surface::{BlendMode, Surface};
+use std::any::Any;
 use std::error::Error;
 
 pub struct SurfaceMock {
@@ -15,8 +16,16 @@ impl SurfaceMock {
 }
 
 impl Surface for SurfaceMock {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+
     fn fill(&mut self, color: &dyn Color) -> Result<(), Box<dyn Error>> {
         self.fill_color.set(color);
+        Ok(())
+    }
+
+    fn blit(&mut self, _: &dyn Surface, _: (i32, i32), _: BlendMode) -> Result<(), Box<dyn Error>> {
         Ok(())
     }
 }

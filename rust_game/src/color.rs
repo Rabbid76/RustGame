@@ -27,6 +27,10 @@ impl ColorRGBA<u8> {
         ColorU8 { rgba: [r, g, b, a] }
     }
 
+    pub fn new_rgba(r: u8, g: u8, b: u8, a: u8) -> ColorU8 {
+        ColorU8 { rgba: [r, g, b, a] }
+    }
+
     pub fn new_rgb(r: u8, g: u8, b: u8) -> ColorU8 {
         ColorU8 {
             rgba: [r, g, b, 255],

@@ -1,8 +1,10 @@
 use crate::canvas::Sdl2Canvas;
 use crate::events::Sdl2Events;
+use crate::surface::Sdl2Surface;
 use rust_game::canvas::Canvas;
 use rust_game::context::{Context, ContextData};
 use rust_game::events::Events;
+use rust_game::surface::Surface;
 use rust_game::time::{Time, TimeStd};
 use std::error::Error;
 use std::sync::Arc;
@@ -36,5 +38,12 @@ impl Context for Sdl2Context {
     }
     fn time(&self) -> Result<Box<dyn Time>, Box<dyn Error>> {
         Ok(Box::new(TimeStd::from(self.context_data.clone())?))
+    }
+    fn new_surface_alpha(
+        &self,
+        width: u32,
+        height: u32,
+    ) -> Result<Box<dyn Surface>, Box<dyn Error>> {
+        Sdl2Surface::new_alpha(width, height)
     }
 }

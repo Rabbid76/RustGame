@@ -1,8 +1,26 @@
 use crate::color::Color;
+use std::any::Any;
 use std::error::Error;
 
+#[repr(i32)]
+pub enum BlendMode {
+    None,
+    Blend,
+    Add,
+    Mod,
+    Mul,
+    Invalid,
+}
+
 pub trait Surface {
+    fn as_any(&self) -> &dyn Any;
     fn fill(&mut self, color: &dyn Color) -> Result<(), Box<dyn Error>>;
+    fn blit(
+        &mut self,
+        source_surface: &dyn Surface,
+        position: (i32, i32),
+        blend_mode: BlendMode,
+    ) -> Result<(), Box<dyn Error>>;
 }
 
 #[cfg(test)]

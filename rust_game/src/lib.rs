@@ -3,6 +3,7 @@ pub mod color;
 pub mod context;
 pub mod events;
 pub mod keys;
+pub mod math;
 pub mod rect;
 pub mod surface;
 mod test;
