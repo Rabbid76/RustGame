@@ -29,5 +29,6 @@
 
 mod canvas;
 pub mod context;
+mod draw;
 mod events;
 mod surface;

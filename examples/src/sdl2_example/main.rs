@@ -11,17 +11,24 @@ pub fn main() {
     let mut events = context.events().unwrap();
     let time = context.time().unwrap();
     let mut clock = time.new_clock();
+    let draw = context.draw().unwrap();
     let mut test_surface = context.new_surface_alpha(50, 50).unwrap();
     test_surface
-        .fill(&ColorU8::new_rgba(255, 0, 0, 128))
+        .fill(&ColorU8::new_rgba(255, 255, 0, 128))
         .unwrap();
+    draw.circle(
+        test_surface.as_mut(),
+        &ColorU8::new_rgba(0, 0, 255, 255),
+        (25, 25),
+        25,
+    )
+    .unwrap();
 
     let center = (400.0, 300.0);
     let mut frame: u32 = 0;
     'running: loop {
-        let delta = clock.tick_frame_rate(100);
-        let current = time.get_ticks();
-        println!("{}, {}", delta, current);
+        let _ = clock.tick_frame_rate(100);
+        let _ = time.get_ticks();
 
         for event in events.get().unwrap() {
             match event {
@@ -46,11 +53,11 @@ pub fn main() {
 
         canvas
             .get_surface()
-            .fill(&ColorU8::from_hsl((frame as u16 + 1) % 360, 100, 50))
+            .fill(&ColorU8::from_hsl((frame as u16 + 1) % 360, 50, 20))
             .unwrap();
         canvas
             .get_surface()
-            .blit(test_surface.as_ref(), (x - 25, y -25), BlendMode::Blend)
+            .blit(test_surface.as_ref(), (x - 25, y - 25), BlendMode::Blend)
             .unwrap();
         canvas.update().unwrap();
         frame += 1

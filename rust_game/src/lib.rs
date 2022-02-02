@@ -1,10 +1,11 @@
 pub mod canvas;
 pub mod color;
 pub mod context;
+pub mod draw;
 pub mod events;
 pub mod keys;
 pub mod math;
-pub mod rect;
+pub mod rectangle;
 pub mod surface;
 mod test;
 pub mod time;

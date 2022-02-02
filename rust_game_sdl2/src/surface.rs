@@ -60,7 +60,7 @@ impl Surface for Sdl2Surface {
     fn fill(&mut self, color: &dyn Color) -> Result<(), Box<dyn Error>> {
         self.surface.fill_rect(
             Option::None,
-            sdl2::pixels::Color::RGB(color.r(), color.g(), color.b()),
+            sdl2::pixels::Color::RGBA(color.r(), color.g(), color.b(), color.a()),
         )?;
         Ok(())
     }
@@ -74,7 +74,7 @@ impl Surface for Sdl2Surface {
         let sdl2_source_surface: &Sdl2Surface =
             match source_surface.as_any().downcast_ref::<Sdl2Surface>() {
                 Some(sdl2_source_surface) => sdl2_source_surface,
-                None => Err("not a sdle surface")?,
+                None => Err("not a sdl2 surface")?,
             };
         Sdl2Surface::blend_sdl2_surface(
             &mut self.surface,

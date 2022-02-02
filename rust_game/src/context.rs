@@ -1,4 +1,5 @@
 use crate::canvas::Canvas;
+use crate::draw::Draw;
 use crate::events::Events;
 use crate::surface::Surface;
 use crate::time::Time;
@@ -14,6 +15,7 @@ pub trait Context {
         width: u32,
         height: u32,
     ) -> Result<Box<dyn Surface>, Box<dyn Error>>;
+    fn draw(&self) -> Result<Box<dyn Draw>, Box<dyn Error>>;
 }
 
 pub struct ContextData {
@@ -45,6 +47,9 @@ mod context_test {
             Err("test")?
         }
         fn new_surface_alpha(&self, _: u32, _: u32) -> Result<Box<dyn Surface>, Box<dyn Error>> {
+            Err("test")?
+        }
+        fn draw(&self) -> Result<Box<dyn Draw>, Box<dyn Error>> {
             Err("test")?
         }
     }
