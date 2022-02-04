@@ -1,4 +1,5 @@
 use rust_game::color::Color;
+use rust_game::rectangle::Rect;
 use rust_game::surface::{BlendMode, Surface};
 use sdl2;
 use std::any::Any;
@@ -55,6 +56,40 @@ impl Sdl2Surface {
 impl Surface for Sdl2Surface {
     fn as_any(&self) -> &dyn Any {
         self
+    }
+
+    fn clone(&self) -> Result<Box<dyn Surface>, Box<dyn Error>> {
+        let mut surface_copy = sdl2::surface::Surface::new(
+            self.surface.width(),
+            self.surface.height(),
+            sdl2::pixels::PixelFormatEnum::ABGR8888,
+        )?;
+        self.surface
+            .blit(Option::None, &mut surface_copy, Option::None)?;
+        Ok(Box::new(Sdl2Surface {
+            surface: surface_copy,
+        }))
+    }
+
+    fn get_width(&self) -> u32 {
+        self.surface.width()
+    }
+
+    fn get_height(&self) -> u32 {
+        self.surface.height()
+    }
+
+    fn get_size(&self) -> (u32, u32) {
+        (self.surface.width(), self.surface.height())
+    }
+
+    fn get_rect(&self) -> Rect {
+        Rect::new(
+            0,
+            0,
+            self.surface.width() as i32,
+            self.surface.height() as i32,
+        )
     }
 
     fn fill(&mut self, color: &dyn Color) -> Result<(), Box<dyn Error>> {

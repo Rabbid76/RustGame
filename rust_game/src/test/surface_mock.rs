@@ -1,4 +1,5 @@
 use crate::color::{Color, ColorU8};
+use crate::rectangle::Rect;
 use crate::surface::{BlendMode, Surface};
 use std::any::Any;
 use std::error::Error;
@@ -18,6 +19,28 @@ impl SurfaceMock {
 impl Surface for SurfaceMock {
     fn as_any(&self) -> &dyn Any {
         self
+    }
+
+    fn clone(&self) -> Result<Box<dyn Surface>, Box<dyn Error>> {
+        Ok(Box::new(SurfaceMock {
+            fill_color: self.fill_color,
+        }))
+    }
+
+    fn get_width(&self) -> u32 {
+        0
+    }
+
+    fn get_height(&self) -> u32 {
+        0
+    }
+
+    fn get_size(&self) -> (u32, u32) {
+        (0, 0)
+    }
+
+    fn get_rect(&self) -> Rect {
+        Rect::new(0, 0, 0, 0)
     }
 
     fn fill(&mut self, color: &dyn Color) -> Result<(), Box<dyn Error>> {
