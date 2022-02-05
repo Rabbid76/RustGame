@@ -27,7 +27,7 @@ impl Surface for SurfaceMock {
         }))
     }
 
-    fn from_surface_and_color(
+    fn modulate_surface_and_color(
         &self,
         color: &dyn Color,
     ) -> Result<Box<dyn Surface>, Box<dyn Error>> {

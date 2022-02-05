@@ -43,6 +43,12 @@ impl ColorRGBA<u8> {
         }
     }
 
+    pub fn new_gray_alpha(grayscale: u8, alpha: u8) -> ColorU8 {
+        ColorU8 {
+            rgba: [grayscale, grayscale, grayscale, alpha],
+        }
+    }
+
     // TODO: HSL/HSV color module
 
     fn f32_to_u8(c: f32) -> u8 {

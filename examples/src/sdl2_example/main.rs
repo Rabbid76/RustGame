@@ -39,14 +39,7 @@ impl ColorAnimation {
     pub fn transform_image(&mut self, image: &dyn Surface) -> Box<dyn Surface> {
         let color = ColorU8::from_hsl((self.frame as u16 + 1) % 360, 100, 50);
         self.frame = (self.frame + 1) % 360;
-        let color_surface = image.from_surface_and_color(&color).unwrap();
-        let mut final_image = image.clone().unwrap();
-        final_image
-            .blit(color_surface.as_ref(), (0, 0), BlendMode::Mul)
-            .unwrap();
-        final_image    
-        //color_surface.blit(image, (0, 0), BlendMode::MulAlpha).unwrap();
-        //color_surface
+        image.modulate_surface_and_color(&color).unwrap()
     }
 }
 
@@ -115,7 +108,11 @@ pub fn main() {
     let time = context.time().unwrap();
     let mut clock = time.new_clock();
     let draw = context.draw().unwrap();
-    let mut test_surface = context.new_surface_alpha(50, 50).unwrap();
+    let mut background_surf = context
+        .new_surface_alpha(canvas.get_surface().get_size())
+        .unwrap();
+    background_surf.fill(&ColorU8::new_gray_alpha(128, 10)).unwrap();
+    let mut test_surface = context.new_surface_alpha((50, 50)).unwrap();
     draw.circle(
         test_surface.as_mut(),
         &ColorU8::new_rgba(255, 255, 255, 255),
@@ -123,7 +120,7 @@ pub fn main() {
         25,
     )
     .unwrap();
-
+    
     let mut sprites = vec![
         Sprite::new(
             Some(ColorAnimation::new(0)),
@@ -169,10 +166,8 @@ pub fn main() {
             sprite.update();
         }
 
-        canvas
-            .get_surface()
-            .fill(&ColorU8::new_gray(64))
-            .unwrap();
+        //canvas.get_surface().fill(&ColorU8::new_gray(64)).unwrap();
+        canvas.get_surface().blit(background_surf.as_ref(), (0, 0), BlendMode::Blend).unwrap();
         for sprite in &mut sprites {
             sprite.draw(&mut canvas).unwrap();
         }

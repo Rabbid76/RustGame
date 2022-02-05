@@ -41,12 +41,8 @@ impl Context for Sdl2Context {
     fn time(&self) -> Result<Box<dyn Time>, Box<dyn Error>> {
         Ok(Box::new(TimeStd::from(self.context_data.clone())?))
     }
-    fn new_surface_alpha(
-        &self,
-        width: u32,
-        height: u32,
-    ) -> Result<Box<dyn Surface>, Box<dyn Error>> {
-        Sdl2Surface::new_alpha(width, height)
+    fn new_surface_alpha(&self, size: (u32, u32)) -> Result<Box<dyn Surface>, Box<dyn Error>> {
+        Sdl2Surface::new_alpha(size)
     }
     fn draw(&self) -> Result<Box<dyn Draw>, Box<dyn Error>> {
         Sdl2Draw::new()

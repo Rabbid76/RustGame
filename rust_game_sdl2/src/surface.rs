@@ -10,11 +10,11 @@ pub struct Sdl2Surface {
 }
 
 impl Sdl2Surface {
-    pub fn new_alpha(width: u32, height: u32) -> Result<Box<dyn Surface>, Box<dyn Error>> {
+    pub fn new_alpha(size: (u32, u32)) -> Result<Box<dyn Surface>, Box<dyn Error>> {
         Ok(Box::new(Sdl2Surface {
             surface: sdl2::surface::Surface::new(
-                width,
-                height,
+                size.0,
+                size.1,
                 sdl2::pixels::PixelFormatEnum::ABGR8888,
             )?,
         }))
@@ -55,7 +55,7 @@ impl Sdl2Surface {
             source_surface.blit(Option::None, dest_surface, dst_rect)?;
             surface.set_blend_mode(sdl2::render::BlendMode::Blend)?;
         }
-        
+
         Ok(())
     }
 }
@@ -78,22 +78,23 @@ impl Surface for Sdl2Surface {
         }))
     }
 
-    fn from_surface_and_color(
+    fn modulate_surface_and_color(
         &self,
         color: &dyn Color,
     ) -> Result<Box<dyn Surface>, Box<dyn Error>> {
-        let mut surface_copy = sdl2::surface::Surface::new(
-            self.surface.width(),
-            self.surface.height(),
-            sdl2::pixels::PixelFormatEnum::ABGR8888,
-        )?;
-        surface_copy.fill_rect(
-            Option::None,
-            sdl2::pixels::Color::RGBA(color.r(), color.g(), color.b(), color.a()),
-        )?;
-        Ok(Box::new(Sdl2Surface {
-            surface: surface_copy,
-        }))
+        let mut color_surface = Sdl2Surface {
+            surface: sdl2::surface::Surface::new(
+                self.surface.width(),
+                self.surface.height(),
+                sdl2::pixels::PixelFormatEnum::ABGR8888,
+            )?,
+        };
+        color_surface.fill(color)?;
+        let mut final_surface = self.clone()?;
+        final_surface.blit(&color_surface, (0, 0), BlendMode::Mul)?;
+        Ok(final_surface)
+        //color_surface.blit(image, (0, 0), BlendMode::MulAlpha).unwrap();
+        //color_surface
     }
 
     fn get_width(&self) -> u32 {
