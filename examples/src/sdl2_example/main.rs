@@ -36,19 +36,19 @@ impl ColorAnimation {
     pub fn new(frame: u32) -> ColorAnimation {
         ColorAnimation { frame }
     }
-    pub fn transform_image(&mut self, image: &dyn Surface) -> Box<dyn Surface> {
+    pub fn transform_image(&mut self, image: &mut dyn Surface) -> Box<dyn Surface> {
         let color = ColorU8::from_hsl((self.frame as u16 + 1) % 360, 100, 50);
         self.frame = (self.frame + 1) % 360;
         let mut color_surface = image.from_surface_and_color(&color).unwrap();
-        /*
+        
         let mut final_image = image.clone().unwrap();
         final_image
-            .blit(color_surface.as_ref(), (0, 0), BlendMode::Mul)
+            .blit(color_surface.as_mut(), (0, 0), BlendMode::Mul)
             .unwrap();
         final_image
-        */
-        color_surface.blit(image, (0, 0), BlendMode::Blend).unwrap();
-        color_surface
+        
+        //color_surface.blit(image, (0, 0), BlendMode::Mul).unwrap();
+        //color_surface
     }
 }
 
@@ -105,15 +105,15 @@ impl Sprite {
     pub fn draw(&mut self, canvas: &mut Box<dyn Canvas>) -> Result<(), Box<dyn Error>> {
         match &mut self.image_animation {
             Some(image_animation) => {
-                let animated_image = image_animation.transform_image(self.image.as_ref());
+                let mut animated_image = image_animation.transform_image(self.image.as_mut());
                 canvas.get_surface().blit(
-                    animated_image.as_ref(),
+                    animated_image.as_mut(),
                     self.rect.get_top_left(),
                     BlendMode::Blend,
                 )
             }
             None => canvas.get_surface().blit(
-                self.image.as_ref(),
+                self.image.as_mut(),
                 self.rect.get_top_left(),
                 BlendMode::Blend,
             ),

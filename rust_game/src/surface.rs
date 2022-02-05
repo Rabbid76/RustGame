@@ -14,7 +14,7 @@ pub enum BlendMode {
 }
 
 pub trait Surface {
-    fn as_any(&self) -> &dyn Any;
+    fn as_any(&mut self) -> &mut dyn Any;
     fn clone(&self) -> Result<Box<dyn Surface>, Box<dyn Error>>;
     fn from_surface_and_color(&self, color: &dyn Color)
         -> Result<Box<dyn Surface>, Box<dyn Error>>;
@@ -23,9 +23,10 @@ pub trait Surface {
     fn get_size(&self) -> (u32, u32);
     fn get_rect(&self) -> Rect;
     fn fill(&mut self, color: &dyn Color) -> Result<(), Box<dyn Error>>;
+    fn set_blend_mode(&mut self, blend_mode: BlendMode) -> Result<(), Box<dyn Error>>;
     fn blit(
         &mut self,
-        source_surface: &dyn Surface,
+        source_surface: &mut dyn Surface,
         position: (i32, i32),
         blend_mode: BlendMode,
     ) -> Result<(), Box<dyn Error>>;

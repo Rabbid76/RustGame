@@ -27,8 +27,7 @@ impl Sdl2Surface {
     pub fn blend_sdl2_surface(
         dest_surface: &mut sdl2::surface::Surface<'static>,
         source_surface: &sdl2::surface::Surface<'static>,
-        position: (i32, i32),
-        blend_mode: BlendMode,
+        position: (i32, i32)
     ) -> Result<(), Box<dyn Error>> {
         let dst_rect = if position == (0, 0) {
             Option::None
@@ -40,21 +39,13 @@ impl Sdl2Surface {
                 source_surface.height(),
             ))
         };
-        match blend_mode {
-            BlendMode::None => dest_surface.set_blend_mode(sdl2::render::BlendMode::None)?,
-            BlendMode::Blend => dest_surface.set_blend_mode(sdl2::render::BlendMode::Blend)?,
-            BlendMode::Add => dest_surface.set_blend_mode(sdl2::render::BlendMode::Add)?,
-            BlendMode::Mod => dest_surface.set_blend_mode(sdl2::render::BlendMode::Mod)?,
-            BlendMode::Mul => dest_surface.set_blend_mode(sdl2::render::BlendMode::Mul)?,
-            _ => Err("invalid blend mode")?,
-        }
         source_surface.blit(Option::None, dest_surface, dst_rect)?;
         Ok(())
     }
 }
 
 impl Surface for Sdl2Surface {
-    fn as_any(&self) -> &dyn Any {
+    fn as_any(&mut self) -> &mut dyn Any {
         self
     }
 
@@ -118,23 +109,37 @@ impl Surface for Sdl2Surface {
         Ok(())
     }
 
+    fn set_blend_mode(&mut self, blend_mode: BlendMode) -> Result<(), Box<dyn Error>> {
+        match blend_mode {
+            BlendMode::None => self.surface.set_blend_mode(sdl2::render::BlendMode::None)?,
+            BlendMode::Blend => self.surface.set_blend_mode(sdl2::render::BlendMode::Blend)?,
+            BlendMode::Add => self.surface.set_blend_mode(sdl2::render::BlendMode::Add)?,
+            BlendMode::Mod => self.surface.set_blend_mode(sdl2::render::BlendMode::Mod)?,
+            BlendMode::Mul => self.surface.set_blend_mode(sdl2::render::BlendMode::Mul)?,
+            _ => Err("invalid blend mode")?,
+        }
+        Ok(())
+    }
+
     fn blit(
         &mut self,
-        source_surface: &dyn Surface,
+        source_surface: &mut dyn Surface,
         position: (i32, i32),
         blend_mode: BlendMode,
     ) -> Result<(), Box<dyn Error>> {
+        source_surface.set_blend_mode(blend_mode)?;
         let sdl2_source_surface: &Sdl2Surface =
             match source_surface.as_any().downcast_ref::<Sdl2Surface>() {
                 Some(sdl2_source_surface) => sdl2_source_surface,
                 None => Err("not a sdl2 surface")?,
-            };
+            };     
         Sdl2Surface::blend_sdl2_surface(
             &mut self.surface,
             &sdl2_source_surface.surface,
             position,
-            blend_mode,
-        )
+        )?;
+        source_surface.set_blend_mode(BlendMode::Blend)?;
+        Ok(())
     }
 }
 

@@ -17,7 +17,7 @@ impl SurfaceMock {
 }
 
 impl Surface for SurfaceMock {
-    fn as_any(&self) -> &dyn Any {
+    fn as_any(&mut self) -> &mut dyn Any {
         self
     }
 
@@ -57,7 +57,11 @@ impl Surface for SurfaceMock {
         Ok(())
     }
 
-    fn blit(&mut self, _: &dyn Surface, _: (i32, i32), _: BlendMode) -> Result<(), Box<dyn Error>> {
+    fn set_blend_mode(&mut self, _: BlendMode) -> Result<(), Box<dyn Error>> {
+        Ok(())
+    }
+
+    fn blit(&mut self, _: &mut dyn Surface, _: (i32, i32), _: BlendMode) -> Result<(), Box<dyn Error>> {
         Ok(())
     }
 }
