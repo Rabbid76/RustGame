@@ -39,29 +39,16 @@ impl ColorAnimation {
     pub fn transform_image(&mut self, image: &dyn Surface) -> Box<dyn Surface> {
         let color = ColorU8::from_hsl((self.frame as u16 + 1) % 360, 100, 50);
         self.frame = (self.frame + 1) % 360;
-        let mut color_surface = image.from_surface_and_color(&color).unwrap();
-        /*
+        let color_surface = image.from_surface_and_color(&color).unwrap();
         let mut final_image = image.clone().unwrap();
         final_image
             .blit(color_surface.as_ref(), (0, 0), BlendMode::Mul)
             .unwrap();
-        final_image
-        */
-        color_surface.blit(image, (0, 0), BlendMode::Blend).unwrap();
-        color_surface
+        final_image    
+        //color_surface.blit(image, (0, 0), BlendMode::MulAlpha).unwrap();
+        //color_surface
     }
 }
-
-/*class HueColorAnimation:
-    def __init__(self, start):
-        self.frame = start
-    def update_image(self, image):
-        colouredImage = pygame.Surface(image.get_size())
-        colouredImage.fill(color)
-        finalImage = image.copy()
-        finalImage.blit(colouredImage, (0, 0), special_flags = pygame.BLEND_MULT)
-        return finalImage
-*/
 
 /* TODO
 trait RectAnimation {

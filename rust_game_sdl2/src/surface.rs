@@ -40,15 +40,22 @@ impl Sdl2Surface {
                 source_surface.height(),
             ))
         };
-        match blend_mode {
-            BlendMode::None => dest_surface.set_blend_mode(sdl2::render::BlendMode::None)?,
-            BlendMode::Blend => dest_surface.set_blend_mode(sdl2::render::BlendMode::Blend)?,
-            BlendMode::Add => dest_surface.set_blend_mode(sdl2::render::BlendMode::Add)?,
-            BlendMode::Mod => dest_surface.set_blend_mode(sdl2::render::BlendMode::Mod)?,
-            BlendMode::Mul => dest_surface.set_blend_mode(sdl2::render::BlendMode::Mul)?,
-            _ => Err("invalid blend mode")?,
+        unsafe {
+            let const_ptr = source_surface as *const sdl2::surface::Surface<'static>;
+            let mut_ptr = const_ptr as *mut sdl2::surface::Surface<'static>;
+            let surface = &mut *mut_ptr;
+            match blend_mode {
+                BlendMode::None => surface.set_blend_mode(sdl2::render::BlendMode::None)?,
+                BlendMode::Blend => surface.set_blend_mode(sdl2::render::BlendMode::Blend)?,
+                BlendMode::Add => surface.set_blend_mode(sdl2::render::BlendMode::Add)?,
+                BlendMode::Mod => surface.set_blend_mode(sdl2::render::BlendMode::Mod)?,
+                BlendMode::Mul => surface.set_blend_mode(sdl2::render::BlendMode::Mul)?,
+                _ => Err("invalid blend mode")?,
+            }
+            source_surface.blit(Option::None, dest_surface, dst_rect)?;
+            surface.set_blend_mode(sdl2::render::BlendMode::Blend)?;
         }
-        source_surface.blit(Option::None, dest_surface, dst_rect)?;
+        
         Ok(())
     }
 }
