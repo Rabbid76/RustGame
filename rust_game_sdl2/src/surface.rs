@@ -71,6 +71,24 @@ impl Surface for Sdl2Surface {
         }))
     }
 
+    fn from_surface_and_color(
+        &self,
+        color: &dyn Color,
+    ) -> Result<Box<dyn Surface>, Box<dyn Error>> {
+        let mut surface_copy = sdl2::surface::Surface::new(
+            self.surface.width(),
+            self.surface.height(),
+            sdl2::pixels::PixelFormatEnum::ABGR8888,
+        )?;
+        surface_copy.fill_rect(
+            Option::None,
+            sdl2::pixels::Color::RGBA(color.r(), color.g(), color.b(), color.a()),
+        )?;
+        Ok(Box::new(Sdl2Surface {
+            surface: surface_copy,
+        }))
+    }
+
     fn get_width(&self) -> u32 {
         self.surface.width()
     }

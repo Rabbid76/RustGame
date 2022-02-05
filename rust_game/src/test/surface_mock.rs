@@ -27,6 +27,15 @@ impl Surface for SurfaceMock {
         }))
     }
 
+    fn from_surface_and_color(
+        &self,
+        color: &dyn Color,
+    ) -> Result<Box<dyn Surface>, Box<dyn Error>> {
+        Ok(Box::new(SurfaceMock {
+            fill_color: ColorU8::new_rgba(color.r(), color.g(), color.b(), color.a()),
+        }))
+    }
+
     fn get_width(&self) -> u32 {
         0
     }

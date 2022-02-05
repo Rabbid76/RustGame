@@ -16,6 +16,8 @@ pub enum BlendMode {
 pub trait Surface {
     fn as_any(&self) -> &dyn Any;
     fn clone(&self) -> Result<Box<dyn Surface>, Box<dyn Error>>;
+    fn from_surface_and_color(&self, color: &dyn Color)
+        -> Result<Box<dyn Surface>, Box<dyn Error>>;
     fn get_width(&self) -> u32;
     fn get_height(&self) -> u32;
     fn get_size(&self) -> (u32, u32);
