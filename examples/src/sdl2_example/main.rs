@@ -83,7 +83,7 @@ impl Sprite {
         self.rect_animation.update_rect(&mut self.rect);
     }
     pub fn draw(&mut self, canvas: &mut Box<dyn Canvas>) -> Result<(), Box<dyn Error>> {
-        match &mut self.image_animation {
+        let _ = match &mut self.image_animation {
             Some(image_animation) => {
                 let animated_image = image_animation.transform_image(self.image.as_ref());
                 canvas.get_surface().blit(
@@ -97,7 +97,8 @@ impl Sprite {
                 self.rect.get_top_left(),
                 BlendMode::Blend,
             ),
-        }
+        }?;
+        Ok(())
     }
 }
 
@@ -111,7 +112,9 @@ pub fn main() {
     let mut background_surf = context
         .new_surface_alpha(canvas.get_surface().get_size())
         .unwrap();
-    background_surf.fill(&ColorU8::new_gray_alpha(128, 10)).unwrap();
+    background_surf
+        .fill(&ColorU8::new_gray_alpha(128, 10))
+        .unwrap();
     let mut test_surface = context.new_surface_alpha((50, 50)).unwrap();
     draw.circle(
         test_surface.as_mut(),
@@ -120,7 +123,7 @@ pub fn main() {
         25,
     )
     .unwrap();
-    
+
     let mut sprites = vec![
         Sprite::new(
             Some(ColorAnimation::new(0)),
@@ -167,7 +170,10 @@ pub fn main() {
         }
 
         //canvas.get_surface().fill(&ColorU8::new_gray(64)).unwrap();
-        canvas.get_surface().blit(background_surf.as_ref(), (0, 0), BlendMode::Blend).unwrap();
+        canvas
+            .get_surface()
+            .blit(background_surf.as_ref(), (0, 0), BlendMode::Blend)
+            .unwrap();
         for sprite in &mut sprites {
             sprite.draw(&mut canvas).unwrap();
         }

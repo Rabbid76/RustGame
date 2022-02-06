@@ -8,8 +8,9 @@ pub enum BlendMode {
     None,
     Blend,
     Add,
-    Mod,
-    Mul,
+    Modulate,
+    Multiply,
+    MultiplyRGBA,
     Invalid,
 }
 
@@ -30,7 +31,7 @@ pub trait Surface {
         source_surface: &dyn Surface,
         position: (i32, i32),
         blend_mode: BlendMode,
-    ) -> Result<(), Box<dyn Error>>;
+    ) -> Result<Rect, Box<dyn Error>>;
 }
 
 #[cfg(test)]

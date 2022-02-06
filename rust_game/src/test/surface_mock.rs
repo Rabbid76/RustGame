@@ -57,7 +57,12 @@ impl Surface for SurfaceMock {
         Ok(())
     }
 
-    fn blit(&mut self, _: &dyn Surface, _: (i32, i32), _: BlendMode) -> Result<(), Box<dyn Error>> {
-        Ok(())
+    fn blit(
+        &mut self,
+        _: &dyn Surface,
+        _: (i32, i32),
+        _: BlendMode,
+    ) -> Result<Rect, Box<dyn Error>> {
+        Ok(Rect::new(0, 0, 0, 0))
     }
 }

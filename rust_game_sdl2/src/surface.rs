@@ -27,35 +27,54 @@ impl Sdl2Surface {
     pub fn blend_sdl2_surface(
         dest_surface: &mut sdl2::surface::Surface<'static>,
         source_surface: &sdl2::surface::Surface<'static>,
-        position: (i32, i32),
+        dest_rect: &Rect,
+        src_rect: &Rect,
         blend_mode: BlendMode,
     ) -> Result<(), Box<dyn Error>> {
-        let dst_rect = if position == (0, 0) {
-            Option::None
-        } else {
-            Option::Some(sdl2::rect::Rect::new(
-                position.0,
-                position.1,
-                source_surface.width(),
-                source_surface.height(),
-            ))
-        };
+        Sdl2Surface::blend_sdl2_surface_sdl2(
+            dest_surface,
+            source_surface,
+            Some(Sdl2Surface::rect_to_sdl2_rect(&dest_rect)),
+            Some(Sdl2Surface::rect_to_sdl2_rect(&src_rect)),
+            Sdl2Surface::blend_mode_to_sdl2_blend_mode(blend_mode),
+        )
+    }
+
+    fn rect_to_sdl2_rect(rect: &Rect) -> sdl2::rect::Rect {
+        sdl2::rect::Rect::new(
+            rect.get_left(),
+            rect.get_top(),
+            rect.get_width() as u32,
+            rect.get_height() as u32,
+        )
+    }
+
+    fn blend_mode_to_sdl2_blend_mode(blend_mode: BlendMode) -> sdl2::render::BlendMode {
+        match blend_mode {
+            BlendMode::None => sdl2::render::BlendMode::None,
+            BlendMode::Blend => sdl2::render::BlendMode::Blend,
+            BlendMode::Add => sdl2::render::BlendMode::Add,
+            BlendMode::Modulate => sdl2::render::BlendMode::Mod,
+            BlendMode::Multiply | BlendMode::MultiplyRGBA => sdl2::render::BlendMode::Mul,
+            _ => sdl2::render::BlendMode::Invalid,
+        }
+    }
+
+    fn blend_sdl2_surface_sdl2(
+        dest_surface: &mut sdl2::surface::Surface<'static>,
+        source_surface: &sdl2::surface::Surface<'static>,
+        dest_rect: Option<sdl2::rect::Rect>,
+        src_rect: Option<sdl2::rect::Rect>,
+        blend_mode: sdl2::render::BlendMode,
+    ) -> Result<(), Box<dyn Error>> {
         unsafe {
             let const_ptr = source_surface as *const sdl2::surface::Surface<'static>;
             let mut_ptr = const_ptr as *mut sdl2::surface::Surface<'static>;
             let surface = &mut *mut_ptr;
-            match blend_mode {
-                BlendMode::None => surface.set_blend_mode(sdl2::render::BlendMode::None)?,
-                BlendMode::Blend => surface.set_blend_mode(sdl2::render::BlendMode::Blend)?,
-                BlendMode::Add => surface.set_blend_mode(sdl2::render::BlendMode::Add)?,
-                BlendMode::Mod => surface.set_blend_mode(sdl2::render::BlendMode::Mod)?,
-                BlendMode::Mul => surface.set_blend_mode(sdl2::render::BlendMode::Mul)?,
-                _ => Err("invalid blend mode")?,
-            }
-            source_surface.blit(Option::None, dest_surface, dst_rect)?;
+            surface.set_blend_mode(blend_mode)?;
+            source_surface.blit(src_rect, dest_surface, dest_rect)?;
             surface.set_blend_mode(sdl2::render::BlendMode::Blend)?;
         }
-
         Ok(())
     }
 }
@@ -91,7 +110,7 @@ impl Surface for Sdl2Surface {
         };
         color_surface.fill(color)?;
         let mut final_surface = self.clone()?;
-        final_surface.blit(&color_surface, (0, 0), BlendMode::Mul)?;
+        final_surface.blit(&color_surface, (0, 0), BlendMode::Multiply)?;
         Ok(final_surface)
         //color_surface.blit(image, (0, 0), BlendMode::MulAlpha).unwrap();
         //color_surface
@@ -131,7 +150,10 @@ impl Surface for Sdl2Surface {
         source_surface: &dyn Surface,
         position: (i32, i32),
         blend_mode: BlendMode,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<Rect, Box<dyn Error>> {
+        let src_rect = source_surface.get_rect().move_(position.0, position.1);
+        let dest_rect = self.get_rect().clip(&src_rect);
+        let src_rect = src_rect.clip(&dest_rect).move_(-position.0, -position.1);
         let sdl2_source_surface: &Sdl2Surface =
             match source_surface.as_any().downcast_ref::<Sdl2Surface>() {
                 Some(sdl2_source_surface) => sdl2_source_surface,
@@ -140,9 +162,11 @@ impl Surface for Sdl2Surface {
         Sdl2Surface::blend_sdl2_surface(
             &mut self.surface,
             &sdl2_source_surface.surface,
-            position,
+            &dest_rect,
+            &src_rect,
             blend_mode,
-        )
+        )?;
+        Ok(dest_rect)
     }
 }
 
