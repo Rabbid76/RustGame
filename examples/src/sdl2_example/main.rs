@@ -4,7 +4,7 @@ use rust_game::context::Context;
 use rust_game::events::Event;
 use rust_game::keys::KeyCode;
 use rust_game::rectangle::Rect;
-use rust_game::surface::{BlendMode, Surface};
+use rust_game::surface::{BlendMode, Surface, SurfaceBuilder};
 use rust_game_sdl2::context::Sdl2Context;
 use std::error::Error;
 
@@ -43,21 +43,6 @@ impl ColorAnimation {
     }
 }
 
-/* TODO
-trait RectAnimation {
-
-}
-trait ImageAnimation {
-
-}
-trait Sprite {
-    pub fn update(&mut self);
-    pub fn rectangleAnimation() -> &dny RectAnimation;
-    pub fn imageAnimation() -> &dny SpriteAnimation;
-    pub fn rectangle(&self) -> Rect;
-    pub fn image(&self) -> &dyn Sprite
-}
-*/
 pub struct Sprite {
     image: Box<dyn Surface>,
     rect: Rect,
@@ -109,13 +94,12 @@ pub fn main() {
     let time = context.time().unwrap();
     let mut clock = time.new_clock();
     let draw = context.draw().unwrap();
-    let mut background_surf = context
-        .new_surface_alpha(canvas.get_surface().get_size())
-        .unwrap();
+    let mut background_surf =
+        Sdl2Context::new_surface_alpha(canvas.get_surface().get_size()).unwrap();
     background_surf
         .fill(&ColorU8::new_gray_alpha(128, 10))
         .unwrap();
-    let mut test_surface = context.new_surface_alpha((50, 50)).unwrap();
+    let mut test_surface = Sdl2Context::new_surface_alpha((50, 50)).unwrap();
     draw.circle(
         test_surface.as_mut(),
         &ColorU8::new_rgba(255, 255, 255, 255),

@@ -80,7 +80,7 @@ impl Sdl2Surface {
 }
 
 impl Surface for Sdl2Surface {
-    fn as_any(&self) -> &dyn Any {
+    fn as_any<'a>(&'a self) -> &'a dyn Any {
         self
     }
 

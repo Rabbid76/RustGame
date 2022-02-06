@@ -2,7 +2,7 @@ use crate::surface::Surface;
 use std::error::Error;
 
 pub trait Canvas {
-    fn get_surface(&mut self) -> &mut dyn Surface;
+    fn get_surface<'a>(&'a mut self) -> &'a mut dyn Surface;
     fn update(&mut self) -> Result<(), Box<dyn Error>>;
 }
 
@@ -33,7 +33,7 @@ mod canvas_test {
     }
 
     impl Canvas for CanvasMock {
-        fn get_surface(&mut self) -> &mut dyn Surface {
+        fn get_surface<'a>(&'a mut self) -> &'a mut dyn Surface {
             &mut self.canvas_surface
         }
         fn update(&mut self) -> Result<(), Box<dyn Error>> {

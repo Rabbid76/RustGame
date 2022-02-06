@@ -17,7 +17,7 @@ impl SurfaceMock {
 }
 
 impl Surface for SurfaceMock {
-    fn as_any(&self) -> &dyn Any {
+    fn as_any<'a>(&'a self) -> &'a dyn Any {
         self
     }
 

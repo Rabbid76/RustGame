@@ -6,7 +6,7 @@ use rust_game::canvas::Canvas;
 use rust_game::context::{Context, ContextData};
 use rust_game::draw::Draw;
 use rust_game::events::Events;
-use rust_game::surface::Surface;
+use rust_game::surface::{Surface, SurfaceBuilder};
 use rust_game::time::{Time, TimeStd};
 use std::error::Error;
 use std::sync::Arc;
@@ -31,6 +31,12 @@ impl Sdl2Context {
     }
 }
 
+impl SurfaceBuilder for Sdl2Context {
+    fn new_surface_alpha(size: (u32, u32)) -> Result<Box<dyn Surface>, Box<dyn Error>> {
+        Sdl2Surface::new_alpha(size)
+    }
+}
+
 impl Context for Sdl2Context {
     fn new_canvas(&self) -> Result<Box<dyn Canvas>, Box<dyn Error>> {
         Ok(Box::new(Sdl2Canvas::new(&self)?))
@@ -41,7 +47,10 @@ impl Context for Sdl2Context {
     fn time(&self) -> Result<Box<dyn Time>, Box<dyn Error>> {
         Ok(Box::new(TimeStd::from(self.context_data.clone())?))
     }
-    fn new_surface_alpha(&self, size: (u32, u32)) -> Result<Box<dyn Surface>, Box<dyn Error>> {
+    fn new_surface_alpha_from_size(
+        &self,
+        size: (u32, u32),
+    ) -> Result<Box<dyn Surface>, Box<dyn Error>> {
         Sdl2Surface::new_alpha(size)
     }
     fn draw(&self) -> Result<Box<dyn Draw>, Box<dyn Error>> {

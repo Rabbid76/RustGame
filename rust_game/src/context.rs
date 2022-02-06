@@ -10,7 +10,10 @@ pub trait Context {
     fn new_canvas(&self) -> Result<Box<dyn Canvas>, Box<dyn Error>>;
     fn events(&self) -> Result<Box<dyn Events>, Box<dyn Error>>;
     fn time(&self) -> Result<Box<dyn Time>, Box<dyn Error>>;
-    fn new_surface_alpha(&self, size: (u32, u32)) -> Result<Box<dyn Surface>, Box<dyn Error>>;
+    fn new_surface_alpha_from_size(
+        &self,
+        size: (u32, u32),
+    ) -> Result<Box<dyn Surface>, Box<dyn Error>>;
     fn draw(&self) -> Result<Box<dyn Draw>, Box<dyn Error>>;
 }
 
@@ -42,7 +45,10 @@ mod context_test {
         fn time(&self) -> Result<Box<dyn Time>, Box<dyn Error>> {
             Err("test")?
         }
-        fn new_surface_alpha(&self, _: (u32, u32)) -> Result<Box<dyn Surface>, Box<dyn Error>> {
+        fn new_surface_alpha_from_size(
+            &self,
+            _: (u32, u32),
+        ) -> Result<Box<dyn Surface>, Box<dyn Error>> {
             Err("test")?
         }
         fn draw(&self) -> Result<Box<dyn Draw>, Box<dyn Error>> {

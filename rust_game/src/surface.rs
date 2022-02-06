@@ -15,7 +15,7 @@ pub enum BlendMode {
 }
 
 pub trait Surface {
-    fn as_any(&self) -> &dyn Any;
+    fn as_any<'a>(&'a self) -> &'a dyn Any;
     fn clone(&self) -> Result<Box<dyn Surface>, Box<dyn Error>>;
     fn modulate_surface_and_color(
         &self,
@@ -32,6 +32,10 @@ pub trait Surface {
         position: (i32, i32),
         blend_mode: BlendMode,
     ) -> Result<Rect, Box<dyn Error>>;
+}
+
+pub trait SurfaceBuilder {
+    fn new_surface_alpha(size: (u32, u32)) -> Result<Box<dyn Surface>, Box<dyn Error>>;
 }
 
 #[cfg(test)]

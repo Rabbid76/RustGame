@@ -35,7 +35,7 @@ impl Sdl2Canvas {
 }
 
 impl Canvas for Sdl2Canvas {
-    fn get_surface(&mut self) -> &mut dyn Surface {
+    fn get_surface<'a>(&'a mut self) -> &'a mut dyn Surface {
         &mut self.canvas_surface
     }
 
