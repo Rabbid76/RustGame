@@ -4,26 +4,11 @@
 
 ### Sprite
 
-```rust
-trait RectAnimation {
+Possible `Sprite` trait interfaces:
 
-}
-trait ImageAnimation {
-
-}
-trait Sprite {
-    pub fn update(&mut self);
-    pub fn rectangleAnimation() -> &dny RectAnimation;
-    pub fn imageAnimation() -> &dny SpriteAnimation;
-    pub fn rectangle(&self) -> Rect;
-    pub fn image(&self) -> &dyn Sprite
-}
-```
-
-Animation implementations:
-
-- `HypotrochoidAnimation{ center, a, b, c }`
-- `HSVColorAnimation`
+- `fn angle(&self) -> f32`
+- `fn circle(&'a self) -> Option<&'a Circle>`
+- `fn radius(&self) -> f32`
 
 ### OpenCV Blending
 
@@ -43,3 +28,15 @@ Animation implementations:
 - load and render svg
 - load gif to surface vector
 - store frames to gif
+
+### Rectangle module
+
+- rename `Rect` -> `Rectangle`
+
+### Circle module
+
+New circle module similar the rectangle module.
+
+### Canvas
+
+- `blit_background(surf, mode)`, mode: center, stretched, fit, tiled

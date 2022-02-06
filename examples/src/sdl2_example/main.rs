@@ -1,64 +1,17 @@
-use rust_game::canvas::Canvas;
 use rust_game::color::{Color, ColorU8};
 use rust_game::context::Context;
 use rust_game::events::Event;
 use rust_game::keys::KeyCode;
-use rust_game::rectangle::Rect;
 use rust_game::sprite::animation::{ColorAnimation, HypotrochoidAnimation, ToColor};
-use rust_game::sprite::{ImageAnimation, RectAnimation};
-use rust_game::surface::{BlendMode, Surface, SurfaceBuilder};
+use rust_game::sprite::{DefaultSprite, Group};
+use rust_game::surface::{BlendMode, SurfaceBuilder};
 use rust_game_sdl2::context::Sdl2Context;
-use std::error::Error;
 
 pub struct FrameToHSVColor {}
 
 impl ToColor<u32> for FrameToHSVColor {
     fn get_color(&mut self, frame: u32) -> Box<dyn Color> {
         Box::new(ColorU8::from_hsl((frame as u16 + 1) % 360, 100, 50))
-    }
-}
-
-pub struct Sprite {
-    image: Box<dyn Surface>,
-    rect: Rect,
-    image_animation: Option<ColorAnimation>,
-    rect_animation: HypotrochoidAnimation,
-}
-
-impl Sprite {
-    pub fn new(
-        image_animation: Option<ColorAnimation>,
-        rect_animation: HypotrochoidAnimation,
-        image: Box<dyn Surface>,
-    ) -> Sprite {
-        let rect = image.get_rect();
-        Sprite {
-            image,
-            rect,
-            image_animation,
-            rect_animation,
-        }
-    }
-    pub fn update(&mut self) {
-        self.rect = self.rect_animation.update_rectangle(&self.rect);
-    }
-    pub fn draw(&mut self, canvas: &mut Box<dyn Canvas>) -> Result<(), Box<dyn Error>> {
-        let _ = match &mut self.image_animation {
-            Some(image_animation) => {
-                let animated_image = image_animation.transform_image(self.image.as_ref());
-                canvas.get_surface().blit(
-                    animated_image.as_ref(),
-                    self.rect.get_top_left(),
-                    BlendMode::Blend,
-                )
-            }
-            None => canvas.get_surface().blit(
-                self.image.as_ref(),
-                self.rect.get_top_left(),
-                BlendMode::Blend,
-            ),
-        }?;
-        Ok(())
     }
 }
 
@@ -83,28 +36,53 @@ pub fn main() {
     )
     .unwrap();
 
-    let mut sprites = vec![
-        Sprite::new(
-            Some(ColorAnimation::new(0, Box::new(FrameToHSVColor {}))),
-            HypotrochoidAnimation::new(0, (400, 300), (100.0, 60.0, 100.0)),
+    let mut sprite_group = Group::new(vec![
+        DefaultSprite::new_animated(
             test_surface.clone().unwrap(),
+            Some(Box::new(ColorAnimation::new(
+                0,
+                Box::new(FrameToHSVColor {}),
+            ))),
+            Some(Box::new(HypotrochoidAnimation::new(
+                0,
+                (400, 300),
+                (100.0, 60.0, 100.0),
+            ))),
         ),
-        Sprite::new(
-            Some(ColorAnimation::new(120, Box::new(FrameToHSVColor {}))),
-            HypotrochoidAnimation::new(360 * 3 / 4, (400, 300), (100.0, 60.0, 100.0)),
+        DefaultSprite::new_animated(
             test_surface.clone().unwrap(),
+            Some(Box::new(ColorAnimation::new(
+                120,
+                Box::new(FrameToHSVColor {}),
+            ))),
+            Some(Box::new(HypotrochoidAnimation::new(
+                360 * 3 / 4,
+                (400, 300),
+                (100.0, 60.0, 100.0),
+            ))),
         ),
-        Sprite::new(
-            Some(ColorAnimation::new(240, Box::new(FrameToHSVColor {}))),
-            HypotrochoidAnimation::new(360 * 3 / 4 * 2, (400, 300), (100.0, 60.0, 100.0)),
+        DefaultSprite::new_animated(
             test_surface.clone().unwrap(),
+            Some(Box::new(ColorAnimation::new(
+                240,
+                Box::new(FrameToHSVColor {}),
+            ))),
+            Some(Box::new(HypotrochoidAnimation::new(
+                360 * 3 / 4 * 2,
+                (400, 300),
+                (100.0, 60.0, 100.0),
+            ))),
         ),
-        Sprite::new(
+        DefaultSprite::new_animated(
+            test_surface.clone().unwrap(),
             Option::None,
-            HypotrochoidAnimation::new(360 * 3 / 4 * 3, (400, 300), (100.0, 60.0, 100.0)),
-            test_surface.clone().unwrap(),
+            Some(Box::new(HypotrochoidAnimation::new(
+                360 * 3 / 4 * 3,
+                (400, 300),
+                (100.0, 60.0, 100.0),
+            ))),
         ),
-    ];
+    ]);
 
     'running: loop {
         let _ = clock.tick_frame_rate(100);
@@ -124,17 +102,12 @@ pub fn main() {
             }
         }
 
-        for sprite in &mut sprites {
-            sprite.update();
-        }
-
+        sprite_group.update().unwrap();
         canvas
             .get_surface()
             .blit(background_surf.as_ref(), (0, 0), BlendMode::Blend)
             .unwrap();
-        for sprite in &mut sprites {
-            sprite.draw(&mut canvas).unwrap();
-        }
+        sprite_group.draw(canvas.get_surface()).unwrap();
         canvas.update().unwrap();
     }
 }
