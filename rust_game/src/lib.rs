@@ -6,6 +6,8 @@ pub mod events;
 pub mod keys;
 pub mod math;
 pub mod rectangle;
+pub mod sprite;
 pub mod surface;
-mod test;
 pub mod time;
+
+mod test;

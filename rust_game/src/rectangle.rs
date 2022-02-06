@@ -28,6 +28,15 @@ impl Rect {
         }
     }
 
+    pub fn new_center(center: (i32, i32), size: (i32, i32)) -> Rect {
+        Rect {
+            x: center.0 - size.0 / 2,
+            y: center.1 - size.1 / 2,
+            w: size.0,
+            h: size.1,
+        }
+    }
+
     pub fn get_width(&self) -> i32 {
         self.w
     }

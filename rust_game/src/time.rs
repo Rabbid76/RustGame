@@ -59,6 +59,10 @@ impl Clock {
         (time_now - previous_time).as_micros() as f64 / 1000.0
     }
 
+    pub fn get_frames(&self) -> u64 {
+        self.frames
+    }
+
     pub fn tick(&mut self) -> f64 {
         if self.frames == 0 {
             return self.initialize_tick();

@@ -1,45 +1,20 @@
 use rust_game::canvas::Canvas;
-use rust_game::color::ColorU8;
+use rust_game::color::{Color, ColorU8};
 use rust_game::context::Context;
 use rust_game::events::Event;
 use rust_game::keys::KeyCode;
 use rust_game::rectangle::Rect;
+use rust_game::sprite::animation::{ColorAnimation, HypotrochoidAnimation, ToColor};
+use rust_game::sprite::{ImageAnimation, RectAnimation};
 use rust_game::surface::{BlendMode, Surface, SurfaceBuilder};
 use rust_game_sdl2::context::Sdl2Context;
 use std::error::Error;
 
-pub struct HypotrochoidAnimation {
-    frame: u32,
-    center: (i32, i32),
-}
+pub struct FrameToHSVColor {}
 
-impl HypotrochoidAnimation {
-    pub fn new(frame: u32, center: (i32, i32)) -> HypotrochoidAnimation {
-        HypotrochoidAnimation { frame, center }
-    }
-
-    pub fn update_rect(&mut self, rect: &mut Rect) {
-        let t = (self.frame as f64).to_radians();
-        self.frame += 1;
-        let (a, b, h) = (100.0, 60.0, 100.0);
-        let x = self.center.0 as f64 + (a - b) * t.cos() + h * ((a - b) / b * t).cos();
-        let y = self.center.1 as f64 + (a - b) * t.sin() - h * ((a - b) / b * t).sin();
-        rect.set_center((x.round() as i32, y.round() as i32))
-    }
-}
-
-pub struct ColorAnimation {
-    frame: u32,
-}
-
-impl ColorAnimation {
-    pub fn new(frame: u32) -> ColorAnimation {
-        ColorAnimation { frame }
-    }
-    pub fn transform_image(&mut self, image: &dyn Surface) -> Box<dyn Surface> {
-        let color = ColorU8::from_hsl((self.frame as u16 + 1) % 360, 100, 50);
-        self.frame = (self.frame + 1) % 360;
-        image.modulate_surface_and_color(&color).unwrap()
+impl ToColor<u32> for FrameToHSVColor {
+    fn get_color(&mut self, frame: u32) -> Box<dyn Color> {
+        Box::new(ColorU8::from_hsl((frame as u16 + 1) % 360, 100, 50))
     }
 }
 
@@ -65,7 +40,7 @@ impl Sprite {
         }
     }
     pub fn update(&mut self) {
-        self.rect_animation.update_rect(&mut self.rect);
+        self.rect = self.rect_animation.update_rectangle(&self.rect);
     }
     pub fn draw(&mut self, canvas: &mut Box<dyn Canvas>) -> Result<(), Box<dyn Error>> {
         let _ = match &mut self.image_animation {
@@ -110,27 +85,27 @@ pub fn main() {
 
     let mut sprites = vec![
         Sprite::new(
-            Some(ColorAnimation::new(0)),
-            HypotrochoidAnimation::new(0, (400, 300)),
+            Some(ColorAnimation::new(0, Box::new(FrameToHSVColor {}))),
+            HypotrochoidAnimation::new(0, (400, 300), (100.0, 60.0, 100.0)),
             test_surface.clone().unwrap(),
         ),
         Sprite::new(
-            Some(ColorAnimation::new(120)),
-            HypotrochoidAnimation::new(360 * 3 / 4, (400, 300)),
+            Some(ColorAnimation::new(120, Box::new(FrameToHSVColor {}))),
+            HypotrochoidAnimation::new(360 * 3 / 4, (400, 300), (100.0, 60.0, 100.0)),
             test_surface.clone().unwrap(),
         ),
         Sprite::new(
-            Some(ColorAnimation::new(240)),
-            HypotrochoidAnimation::new(360 * 3 / 4 * 2, (400, 300)),
+            Some(ColorAnimation::new(240, Box::new(FrameToHSVColor {}))),
+            HypotrochoidAnimation::new(360 * 3 / 4 * 2, (400, 300), (100.0, 60.0, 100.0)),
             test_surface.clone().unwrap(),
         ),
         Sprite::new(
             Option::None,
-            HypotrochoidAnimation::new(360 * 3 / 4 * 3, (400, 300)),
+            HypotrochoidAnimation::new(360 * 3 / 4 * 3, (400, 300), (100.0, 60.0, 100.0)),
             test_surface.clone().unwrap(),
         ),
     ];
-    //let mut frame = 0;
+
     'running: loop {
         let _ = clock.tick_frame_rate(100);
         let _ = time.get_ticks();
@@ -153,7 +128,6 @@ pub fn main() {
             sprite.update();
         }
 
-        //canvas.get_surface().fill(&ColorU8::new_gray(64)).unwrap();
         canvas
             .get_surface()
             .blit(background_surf.as_ref(), (0, 0), BlendMode::Blend)
@@ -162,6 +136,5 @@ pub fn main() {
             sprite.draw(&mut canvas).unwrap();
         }
         canvas.update().unwrap();
-        //frame += 1
     }
 }
