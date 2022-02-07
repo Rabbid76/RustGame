@@ -131,7 +131,8 @@ pub fn main() {
                 Box::new(FrameToHSVColor {}),
             ))),
             Some(Box::new(HypotrochoidAnimation::new(
-                0,
+                0.0,
+                1.0,
                 (400, 300),
                 (100.0, 60.0, 100.0),
             ))),
@@ -143,7 +144,8 @@ pub fn main() {
                 Box::new(FrameToHSVColor {}),
             ))),
             Some(Box::new(HypotrochoidAnimation::new(
-                360 * 3 / 4,
+                360.0 * 3.0 / 4.0,
+                1.0,
                 (400, 300),
                 (100.0, 60.0, 100.0),
             ))),
@@ -155,7 +157,8 @@ pub fn main() {
                 Box::new(FrameToHSVColor {}),
             ))),
             Some(Box::new(HypotrochoidAnimation::new(
-                360 * 3 / 4 * 2,
+                360.0 * 3.0 / 4.0 * 2.0,
+                1.0,
                 (400, 300),
                 (100.0, 60.0, 100.0),
             ))),
@@ -164,7 +167,8 @@ pub fn main() {
             ghost_surface.clone().unwrap(),
             Option::None,
             Some(Box::new(HypotrochoidAnimation::new(
-                360 * 3 / 4 * 3,
+                360.0 * 3.0 / 4.0 * 3.0,
+                1.0,
                 (400, 300),
                 (100.0, 60.0, 100.0),
             ))),

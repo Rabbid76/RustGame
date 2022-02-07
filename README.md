@@ -2,6 +2,8 @@
 
 inspired by pygame
 
+![creature animation](screenshots/creature_animation.png)
+
 ## Rust Game SDL2
 
 It is required to install SDL2 and OpenCV.

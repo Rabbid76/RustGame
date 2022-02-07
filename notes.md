@@ -2,6 +2,8 @@
 
 ## TODO
 
+Generate screenshots with `image.store`.
+
 ### Sprite
 
 Possible `Sprite` trait interfaces:

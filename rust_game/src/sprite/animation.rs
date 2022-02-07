@@ -4,19 +4,22 @@ use crate::sprite::{ImageAnimation, RectAnimation};
 use crate::surface::Surface;
 
 pub struct HypotrochoidAnimation {
-    frame: u32,
+    pos: f32,
+    step: f32,
     center: (i32, i32),
     parameter: (f32, f32, f32),
 }
 
 impl HypotrochoidAnimation {
     pub fn new(
-        frame: u32,
+        start: f32,
+        step: f32,
         center: (i32, i32),
         parameter: (f32, f32, f32),
     ) -> HypotrochoidAnimation {
         HypotrochoidAnimation {
-            frame,
+            pos: start,
+            step,
             center,
             parameter,
         }
@@ -25,8 +28,8 @@ impl HypotrochoidAnimation {
 
 impl RectAnimation for HypotrochoidAnimation {
     fn update_rectangle(&mut self, rect: &Rect) -> Rect {
-        let t = (self.frame as f32).to_radians();
-        self.frame += 1;
+        let t = self.pos.to_radians();
+        self.pos += self.step;
         let (a, b, h) = self.parameter;
         let x = self.center.0 as f32 + (a - b) * t.cos() + h * ((a - b) / b * t).cos();
         let y = self.center.1 as f32 + (a - b) * t.sin() - h * ((a - b) / b * t).sin();
