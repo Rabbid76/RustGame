@@ -28,6 +28,7 @@ Possible `Sprite` trait interfaces:
 - load and render svg
 - load gif to surface vector
 - store frames to gif
+- emoji to surface
 
 ### Rectangle module
 
@@ -40,3 +41,9 @@ New circle module similar the rectangle module.
 ### Canvas
 
 - `blit_background(surf, mode)`, mode: center, stretched, fit, tiled
+
+### Math module
+
+- line intersection
+- point in triangle
+- point in convex polygon
