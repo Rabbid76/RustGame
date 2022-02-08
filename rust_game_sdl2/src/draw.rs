@@ -1,4 +1,4 @@
-use crate::surface::Sdl2Surface;
+use crate::opencv_sdl2;
 use opencv::core;
 use opencv::imgproc;
 use opencv::types;
@@ -17,31 +17,6 @@ impl Sdl2Draw {
 }
 
 impl Sdl2Draw {
-    fn surface_to_sdl2_surface<'a>(
-        surface: &'a mut dyn Surface,
-    ) -> Result<&'a Sdl2Surface, Box<dyn Error>> {
-        match surface.as_any().downcast_ref::<Sdl2Surface>() {
-            Some(sdl2_surface) => Ok(sdl2_surface),
-            None => Err("not a sdl2 surface")?,
-        }
-    }
-
-    unsafe fn sdl2_surface_to_opencv_mat(
-        sdl2_surface: &Sdl2Surface,
-    ) -> Result<core::Mat, Box<dyn Error>> {
-        let raw_surface = sdl2_surface.surface.raw();
-        let w = (*raw_surface).w as i32;
-        let h = (*raw_surface).h as i32;
-        let step = (w * 4) as usize;
-        Ok(core::Mat::new_rows_cols_with_data(
-            w,
-            h,
-            core::CV_8UC4,
-            (*raw_surface).pixels,
-            step,
-        )?)
-    }
-
     fn color_to_opencv_scalar(color: &dyn Color) -> core::Scalar {
         core::Scalar::from([
             color.r() as f64,
@@ -94,10 +69,10 @@ impl Draw for Sdl2Draw {
         rectangle: Rect,
         width: i32,
     ) -> Result<Rect, Box<dyn Error>> {
-        let sdl2_surface = Sdl2Draw::surface_to_sdl2_surface(surface)?;
+        let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
         unsafe {
-            let mut mat = Sdl2Draw::sdl2_surface_to_opencv_mat(&sdl2_surface)?;
-            let line_type = 8;
+            let mut mat = opencv_sdl2::sdl2_surface_to_opencv_mat(&sdl2_surface.surface)?;
+            let line_type = imgproc::LINE_8;
             let shift = 0;
             imgproc::rectangle(
                 &mut mat,
@@ -119,10 +94,10 @@ impl Draw for Sdl2Draw {
         radius: i32,
         width: i32,
     ) -> Result<Rect, Box<dyn Error>> {
-        let sdl2_surface = Sdl2Draw::surface_to_sdl2_surface(surface)?;
+        let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
         unsafe {
-            let mut mat = Sdl2Draw::sdl2_surface_to_opencv_mat(&sdl2_surface)?;
-            let line_type = 8;
+            let mut mat = opencv_sdl2::sdl2_surface_to_opencv_mat(&sdl2_surface.surface)?;
+            let line_type = imgproc::FILLED;
             let shift = 0;
             imgproc::circle(
                 &mut mat,
@@ -151,10 +126,10 @@ impl Draw for Sdl2Draw {
         end: (i32, i32),
         width: i32,
     ) -> Result<Rect, Box<dyn Error>> {
-        let sdl2_surface = Sdl2Draw::surface_to_sdl2_surface(surface)?;
+        let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
         unsafe {
-            let mut mat = Sdl2Draw::sdl2_surface_to_opencv_mat(&sdl2_surface)?;
-            let line_type = 8;
+            let mut mat = opencv_sdl2::sdl2_surface_to_opencv_mat(&sdl2_surface.surface)?;
+            let line_type = imgproc::LINE_8;
             let shift = 0;
             imgproc::line(
                 &mut mat,
@@ -177,10 +152,10 @@ impl Draw for Sdl2Draw {
         points: &Vec<(i32, i32)>,
         width: i32,
     ) -> Result<Rect, Box<dyn Error>> {
-        let sdl2_surface = Sdl2Draw::surface_to_sdl2_surface(surface)?;
+        let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
         unsafe {
-            let mut mat = Sdl2Draw::sdl2_surface_to_opencv_mat(&sdl2_surface)?;
-            let line_type = 8;
+            let mut mat = opencv_sdl2::sdl2_surface_to_opencv_mat(&sdl2_surface.surface)?;
+            let line_type = imgproc::LINE_8;
             let shift = 0;
             imgproc::polylines(
                 &mut mat,

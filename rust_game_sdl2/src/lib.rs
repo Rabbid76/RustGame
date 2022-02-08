@@ -31,4 +31,5 @@ mod canvas;
 pub mod context;
 mod draw;
 mod events;
+mod opencv_sdl2;
 mod surface;

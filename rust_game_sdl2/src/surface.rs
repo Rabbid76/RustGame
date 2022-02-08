@@ -1,3 +1,5 @@
+use crate::opencv_sdl2;
+use opencv::core;
 use rust_game::color::Color;
 use rust_game::rectangle::Rect;
 use rust_game::surface::{BlendMode, Surface};
@@ -31,13 +33,22 @@ impl Sdl2Surface {
         src_rect: &Rect,
         blend_mode: BlendMode,
     ) -> Result<(), Box<dyn Error>> {
-        Sdl2Surface::blend_sdl2_surface_sdl2(
-            dest_surface,
-            source_surface,
-            Some(Sdl2Surface::rect_to_sdl2_rect(&dest_rect)),
-            Some(Sdl2Surface::rect_to_sdl2_rect(&src_rect)),
-            Sdl2Surface::blend_mode_to_sdl2_blend_mode(blend_mode),
-        )
+        match blend_mode {
+            BlendMode::MultiplyRGBA => Sdl2Surface::blend_sdl2_surface_opencv(
+                dest_surface,
+                source_surface,
+                dest_rect,
+                src_rect,
+                blend_mode,
+            ),
+            _ => Sdl2Surface::blend_sdl2_surface_sdl2(
+                dest_surface,
+                source_surface,
+                Some(Sdl2Surface::rect_to_sdl2_rect(&dest_rect)),
+                Some(Sdl2Surface::rect_to_sdl2_rect(&src_rect)),
+                Sdl2Surface::blend_mode_to_sdl2_blend_mode(blend_mode),
+            ),
+        }
     }
 
     fn rect_to_sdl2_rect(rect: &Rect) -> sdl2::rect::Rect {
@@ -77,6 +88,28 @@ impl Sdl2Surface {
         }
         Ok(())
     }
+
+    fn blend_sdl2_surface_opencv(
+        dest_surface: &mut sdl2::surface::Surface<'static>,
+        source_surface: &sdl2::surface::Surface<'static>,
+        dest_rect: &Rect,
+        src_rect: &Rect,
+        blend_mode: BlendMode,
+    ) -> Result<(), Box<dyn Error>> {
+        unsafe {
+            match blend_mode {
+                BlendMode::MultiplyRGBA => {
+                    let mut dest_mat =
+                        opencv_sdl2::sdl2_surface_range_to_opencv_mat(dest_surface, dest_rect)?;
+                    let src_mat =
+                        opencv_sdl2::sdl2_surface_range_to_opencv_mat(source_surface, src_rect)?;
+                    core::multiply(&dest_mat.clone(), &src_mat, &mut dest_mat, 1.0 / 255.0, -1)?;
+                }
+                _ => Err("not yet implemented")?,
+            }
+        }
+        Ok(())
+    }
 }
 
 impl Surface for Sdl2Surface {
@@ -109,11 +142,13 @@ impl Surface for Sdl2Surface {
             )?,
         };
         color_surface.fill(color)?;
-        let mut final_surface = self.clone()?;
-        final_surface.blit(&color_surface, (0, 0), BlendMode::Multiply)?;
-        Ok(final_surface)
-        //color_surface.blit(image, (0, 0), BlendMode::MulAlpha).unwrap();
-        //color_surface
+        //let mut final_surface = self.clone()?;
+        //final_surface.blit(&color_surface, (0, 0), BlendMode::Multiply)?;
+        //Ok(final_surface)
+        color_surface
+            .blit(self, (0, 0), BlendMode::MultiplyRGBA)
+            .unwrap();
+        Ok(Box::new(color_surface))
     }
 
     fn get_width(&self) -> u32 {

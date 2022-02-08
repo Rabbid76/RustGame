@@ -175,7 +175,10 @@ pub fn main() {
         ),
     ]);
 
-    canvas.get_surface().fill(&ColorU8::new_gray_alpha(128, 255)).unwrap();
+    canvas
+        .get_surface()
+        .fill(&ColorU8::new_gray_alpha(128, 255))
+        .unwrap();
     'running: loop {
         let _ = clock.tick_frame_rate(100);
         let _ = time.get_ticks();
@@ -199,6 +202,7 @@ pub fn main() {
             .get_surface()
             .blit(background_surf.as_ref(), (0, 0), BlendMode::Blend)
             .unwrap();
+        //canvas.get_surface().fill(&ColorU8::new_gray_alpha(128, 255)).unwrap();
         sprite_group.draw(canvas.get_surface()).unwrap();
         canvas.update().unwrap();
     }
