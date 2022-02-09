@@ -3,6 +3,7 @@ use crate::draw::Sdl2Draw;
 use crate::events::Sdl2Events;
 use crate::surface::Sdl2Surface;
 use rust_game::canvas::Canvas;
+use rust_game::color::Color;
 use rust_game::context::{Context, ContextData};
 use rust_game::draw::Draw;
 use rust_game::events::Events;
@@ -34,6 +35,15 @@ impl Sdl2Context {
 impl SurfaceBuilder for Sdl2Context {
     fn new_surface_alpha(size: (u32, u32)) -> Result<Box<dyn Surface>, Box<dyn Error>> {
         Sdl2Surface::new_alpha(size)
+    }
+
+    fn new_surface_with_color(
+        size: (u32, u32),
+        color: &dyn Color,
+    ) -> Result<Box<dyn Surface>, Box<dyn Error>> {
+        let mut surface = Sdl2Surface::new_alpha(size)?;
+        surface.fill(color)?;
+        Ok(surface)
     }
 }
 

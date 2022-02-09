@@ -17,3 +17,7 @@ sdl2 = "0.35.1"
 [[bin]]
 name = "sdl2_example"
 path = "src/sdl2_example/main.rs"
+
+[[bin]]
+name = "creature_animation"
+path = "src/creature_animation/main.rs"

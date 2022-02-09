@@ -36,6 +36,10 @@ pub trait Surface {
 
 pub trait SurfaceBuilder {
     fn new_surface_alpha(size: (u32, u32)) -> Result<Box<dyn Surface>, Box<dyn Error>>;
+    fn new_surface_with_color(
+        size: (u32, u32),
+        color: &dyn Color,
+    ) -> Result<Box<dyn Surface>, Box<dyn Error>>;
 }
 
 #[cfg(test)]

@@ -7,6 +7,7 @@ pub trait Draw {
     fn rectangle(
         &self,
         surface: &mut dyn Surface,
+        antialias: bool,
         color: &dyn Color,
         rectangle: Rect,
         width: i32,
@@ -15,6 +16,7 @@ pub trait Draw {
     fn circle(
         &self,
         surface: &mut dyn Surface,
+        antialias: bool,
         color: &dyn Color,
         center: (i32, i32),
         radius: i32,
@@ -24,6 +26,7 @@ pub trait Draw {
     fn line(
         &self,
         surface: &mut dyn Surface,
+        antialias: bool,
         color: &dyn Color,
         start: (i32, i32),
         end: (i32, i32),
@@ -33,6 +36,7 @@ pub trait Draw {
     fn lines(
         &self,
         surface: &mut dyn Surface,
+        antialias: bool,
         color: &dyn Color,
         close: bool,
         points: &Vec<(i32, i32)>,
@@ -50,6 +54,7 @@ mod test_surface {
         fn rectangle(
             &self,
             _: &mut dyn Surface,
+            _: bool,
             _: &dyn Color,
             _: Rect,
             _: i32,
@@ -60,6 +65,7 @@ mod test_surface {
         fn circle(
             &self,
             _: &mut dyn Surface,
+            _: bool,
             _: &dyn Color,
             _: (i32, i32),
             _: i32,
@@ -71,6 +77,7 @@ mod test_surface {
         fn line(
             &self,
             _: &mut dyn Surface,
+            _: bool,
             _: &dyn Color,
             _: (i32, i32),
             _: (i32, i32),
@@ -82,6 +89,7 @@ mod test_surface {
         fn lines(
             &self,
             _: &mut dyn Surface,
+            _: bool,
             _: &dyn Color,
             _: bool,
             _: &Vec<(i32, i32)>,
