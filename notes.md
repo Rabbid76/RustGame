@@ -17,7 +17,6 @@ Possible `Sprite` trait interfaces:
 ### Draw methods
 
 - rect, line, polygon, ellipse
-- antialiased draw methods
 
 ### Surface
 
