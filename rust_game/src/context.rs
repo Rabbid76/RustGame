@@ -1,6 +1,7 @@
 use crate::canvas::Canvas;
 use crate::draw::Draw;
 use crate::events::Events;
+use crate::image::Image;
 use crate::surface::Surface;
 use crate::time::Time;
 use std::error::Error;
@@ -15,6 +16,7 @@ pub trait Context {
         size: (u32, u32),
     ) -> Result<Box<dyn Surface>, Box<dyn Error>>;
     fn draw(&self) -> Result<Box<dyn Draw>, Box<dyn Error>>;
+    fn image(&self) -> Result<Box<dyn Image>, Box<dyn Error>>;
 }
 
 pub struct ContextData {
@@ -52,6 +54,9 @@ mod context_test {
             Err("test")?
         }
         fn draw(&self) -> Result<Box<dyn Draw>, Box<dyn Error>> {
+            Err("test")?
+        }
+        fn image(&self) -> Result<Box<dyn Image>, Box<dyn Error>> {
             Err("test")?
         }
     }

@@ -1,17 +1,18 @@
 use crate::canvas::Sdl2Canvas;
 use crate::draw::Sdl2Draw;
 use crate::events::Sdl2Events;
+use crate::image::Sdl2Image;
 use crate::surface::Sdl2Surface;
 use rust_game::canvas::Canvas;
 use rust_game::color::Color;
 use rust_game::context::{Context, ContextData};
 use rust_game::draw::Draw;
 use rust_game::events::Events;
+use rust_game::image::Image;
 use rust_game::surface::{Surface, SurfaceBuilder};
 use rust_game::time::{Time, TimeStd};
 use std::error::Error;
 use std::sync::Arc;
-
 extern crate sdl2;
 
 pub struct Sdl2Context {
@@ -65,5 +66,8 @@ impl Context for Sdl2Context {
     }
     fn draw(&self) -> Result<Box<dyn Draw>, Box<dyn Error>> {
         Sdl2Draw::new()
+    }
+    fn image(&self) -> Result<Box<dyn Image>, Box<dyn Error>> {
+        Sdl2Image::new()
     }
 }

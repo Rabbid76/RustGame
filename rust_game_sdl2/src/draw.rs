@@ -73,7 +73,11 @@ impl Draw for Sdl2Draw {
         let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
         unsafe {
             let mut mat = opencv_sdl2::sdl2_surface_to_opencv_mat(&sdl2_surface.surface)?;
-            let line_type = if antialias { imgproc::LINE_AA } else { imgproc::LINE_8 };
+            let line_type = if antialias {
+                imgproc::LINE_AA
+            } else {
+                imgproc::LINE_8
+            };
             let shift = 0;
             imgproc::rectangle(
                 &mut mat,
@@ -99,7 +103,11 @@ impl Draw for Sdl2Draw {
         let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
         unsafe {
             let mut mat = opencv_sdl2::sdl2_surface_to_opencv_mat(&sdl2_surface.surface)?;
-            let line_type = if antialias { imgproc::LINE_AA } else { imgproc::FILLED };
+            let line_type = if antialias {
+                imgproc::LINE_AA
+            } else {
+                imgproc::FILLED
+            };
             let shift = 0;
             imgproc::circle(
                 &mut mat,
@@ -132,7 +140,11 @@ impl Draw for Sdl2Draw {
         let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
         unsafe {
             let mut mat = opencv_sdl2::sdl2_surface_to_opencv_mat(&sdl2_surface.surface)?;
-            let line_type = if antialias { imgproc::LINE_AA } else { imgproc::LINE_8 };
+            let line_type = if antialias {
+                imgproc::LINE_AA
+            } else {
+                imgproc::LINE_8
+            };
             let shift = 0;
             imgproc::line(
                 &mut mat,
@@ -159,7 +171,11 @@ impl Draw for Sdl2Draw {
         let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
         unsafe {
             let mut mat = opencv_sdl2::sdl2_surface_to_opencv_mat(&sdl2_surface.surface)?;
-            let line_type = if antialias { imgproc::LINE_AA } else { imgproc::LINE_8 };
+            let line_type = if antialias {
+                imgproc::LINE_AA
+            } else {
+                imgproc::LINE_8
+            };
             let shift = 0;
             imgproc::polylines(
                 &mut mat,

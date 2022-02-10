@@ -62,7 +62,9 @@ fn create_smiley(draw: &dyn Draw) -> Result<Box<dyn Surface>, Box<dyn Error>> {
 }
 
 fn create_ghost(draw: &dyn Draw) -> Result<Box<dyn Surface>, Box<dyn Error>> {
-    let mut surface = Sdl2Context::new_surface_with_color((50, 50), &ColorU8::new_rgba(255, 255, 255, 0)).unwrap();
+    let mut surface =
+        Sdl2Context::new_surface_with_color((50, 50), &ColorU8::new_rgba(255, 255, 255, 0))
+            .unwrap();
     draw.circle(
         surface.as_mut(),
         false,
