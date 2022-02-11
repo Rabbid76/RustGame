@@ -24,7 +24,6 @@ Possible `Sprite` trait interfaces:
 
 ### Lode and store image
 
-- load png, jpg
 - store png, jpg, bmp
 - load and render svg
 - load gif to surface vector

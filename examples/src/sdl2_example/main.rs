@@ -28,13 +28,22 @@ pub fn main() {
     background_surf
         .fill(&ColorU8::new_gray_alpha(128, 10))
         .unwrap();
-    let test_bmp = image
-        .load(&Path::new("./resource/bitmap/test.bmp"))
+    let test1_png = image
+        .load(&Path::new("./resource/icon/Apple64.png"))
         .unwrap();
+    let test2_png = image
+        .load(&Path::new("./resource/icon/Banana64.png"))
+        .unwrap(); 
+        let test3_png = image
+        .load(&Path::new("./resource/icon/Pear64.png"))
+        .unwrap();
+    let test4_png = image
+        .load(&Path::new("./resource/icon/Plums64.png"))
+        .unwrap();    
 
     let mut sprite_group = Group::new(vec![
         DefaultSprite::new_animated(
-            test_bmp.clone().unwrap(),
+            test1_png.clone().unwrap(),
             Option::None,
             Some(Box::new(HypotrochoidAnimation::new(
                 0.0,
@@ -44,7 +53,7 @@ pub fn main() {
             ))),
         ),
         DefaultSprite::new_animated(
-            test_bmp.clone().unwrap(),
+            test2_png.clone().unwrap(),
             Option::None,
             Some(Box::new(HypotrochoidAnimation::new(
                 360.0 * 3.0 / 4.0,
@@ -54,7 +63,7 @@ pub fn main() {
             ))),
         ),
         DefaultSprite::new_animated(
-            test_bmp.clone().unwrap(),
+            test3_png.clone().unwrap(),
             Option::None,
             Some(Box::new(HypotrochoidAnimation::new(
                 360.0 * 3.0 / 4.0 * 2.0,
@@ -64,7 +73,7 @@ pub fn main() {
             ))),
         ),
         DefaultSprite::new_animated(
-            test_bmp.clone().unwrap(),
+            test4_png.clone().unwrap(),
             Option::None,
             Some(Box::new(HypotrochoidAnimation::new(
                 360.0 * 3.0 / 4.0 * 3.0,
