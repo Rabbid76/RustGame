@@ -20,5 +20,12 @@ opencv = "0.62.0"
 # https://docs.rs/image/latest/image/
 image = "0.24.0"
 
+# https://docs.rs/tiny-skia/latest/tiny_skia/
+tiny-skia = "0.6.3"
+# https://docs.rs/usvg/latest/usvg/
+usvg = "0.20.0"
+# https://docs.rs/resvg/latest/resvg/
+resvg = "0.20.0"
+
 num-traits = "0.2.x"
 num-derive = "0.3.x"

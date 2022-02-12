@@ -1,20 +1,10 @@
-use rust_game::color::{Color, ColorU8};
+use rust_game::color::ColorU8;
 use rust_game::context::Context;
 use rust_game::events::Event;
 use rust_game::keys::KeyCode;
-use rust_game::sprite::animation::{HypotrochoidAnimation, ToColor};
-use rust_game::sprite::{DefaultSprite, Group};
 use rust_game::surface::{BlendMode, SurfaceBuilder};
 use rust_game_sdl2::context::Sdl2Context;
 use std::path::Path;
-
-pub struct FrameToHSVColor {}
-
-impl ToColor<u32> for FrameToHSVColor {
-    fn get_color(&mut self, frame: u32) -> Box<dyn Color> {
-        Box::new(ColorU8::from_hsl((frame as u16 + 1) % 360, 100, 50))
-    }
-}
 
 pub fn main() {
     let context = Sdl2Context::new().unwrap();
@@ -28,66 +18,25 @@ pub fn main() {
     background_surf
         .fill(&ColorU8::new_gray_alpha(128, 10))
         .unwrap();
+    let test_bmp = image
+        .load(&Path::new("./resource/bitmap/test.bmp"))
+        .unwrap();
     let test1_png = image
         .load(&Path::new("./resource/icon/Apple64.png"))
         .unwrap();
     let test2_png = image
         .load(&Path::new("./resource/icon/Banana64.png"))
-        .unwrap(); 
-        let test3_png = image
+        .unwrap();
+    let test3_png = image
         .load(&Path::new("./resource/icon/Pear64.png"))
         .unwrap();
     let test4_png = image
         .load(&Path::new("./resource/icon/Plums64.png"))
-        .unwrap();    
-
-    let mut sprite_group = Group::new(vec![
-        DefaultSprite::new_animated(
-            test1_png.clone().unwrap(),
-            Option::None,
-            Some(Box::new(HypotrochoidAnimation::new(
-                0.0,
-                1.0,
-                (400, 300),
-                (100.0, 60.0, 100.0),
-            ))),
-        ),
-        DefaultSprite::new_animated(
-            test2_png.clone().unwrap(),
-            Option::None,
-            Some(Box::new(HypotrochoidAnimation::new(
-                360.0 * 3.0 / 4.0,
-                1.0,
-                (400, 300),
-                (100.0, 60.0, 100.0),
-            ))),
-        ),
-        DefaultSprite::new_animated(
-            test3_png.clone().unwrap(),
-            Option::None,
-            Some(Box::new(HypotrochoidAnimation::new(
-                360.0 * 3.0 / 4.0 * 2.0,
-                1.0,
-                (400, 300),
-                (100.0, 60.0, 100.0),
-            ))),
-        ),
-        DefaultSprite::new_animated(
-            test4_png.clone().unwrap(),
-            Option::None,
-            Some(Box::new(HypotrochoidAnimation::new(
-                360.0 * 3.0 / 4.0 * 3.0,
-                1.0,
-                (400, 300),
-                (100.0, 60.0, 100.0),
-            ))),
-        ),
-    ]);
-
-    canvas
-        .get_surface()
-        .fill(&ColorU8::new_gray_alpha(128, 255))
         .unwrap();
+    let test_svg = image
+        .load(&Path::new("./resource/clipart/ice-001.svg"))
+        .unwrap();
+
     'running: loop {
         let _ = clock.tick_frame_rate(100);
         let _ = time.get_ticks();
@@ -106,13 +55,31 @@ pub fn main() {
             }
         }
 
-        sprite_group.update().unwrap();
+        canvas.get_surface().fill(&ColorU8::new_gray(128)).unwrap();
         canvas
             .get_surface()
-            .blit(background_surf.as_ref(), (0, 0), BlendMode::Blend)
+            .blit(test_bmp.as_ref(), (10, 10), BlendMode::Blend)
             .unwrap();
-        //canvas.get_surface().fill(&ColorU8::new_gray_alpha(128, 255)).unwrap();
-        sprite_group.draw(canvas.get_surface()).unwrap();
+        canvas
+            .get_surface()
+            .blit(test1_png.as_ref(), (10, 100), BlendMode::Blend)
+            .unwrap();
+        canvas
+            .get_surface()
+            .blit(test2_png.as_ref(), (110, 100), BlendMode::Blend)
+            .unwrap();
+        canvas
+            .get_surface()
+            .blit(test3_png.as_ref(), (210, 100), BlendMode::Blend)
+            .unwrap();
+        canvas
+            .get_surface()
+            .blit(test4_png.as_ref(), (310, 100), BlendMode::Blend)
+            .unwrap();
+            canvas
+            .get_surface()
+            .blit(test_svg.as_ref(), (10, 200), BlendMode::Blend)
+            .unwrap();
         canvas.update().unwrap();
     }
 }
