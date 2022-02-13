@@ -76,10 +76,24 @@ pub fn main() {
             .get_surface()
             .blit(test4_png.as_ref(), (310, 100), BlendMode::Blend)
             .unwrap();
-            canvas
+        canvas
             .get_surface()
             .blit(test_svg.as_ref(), (10, 200), BlendMode::Blend)
             .unwrap();
         canvas.update().unwrap();
+        if clock.get_frames() == 1 {
+            image
+                .save(canvas.get_surface(), &Path::new("c:/temp/screenshot.png"))
+                .unwrap();
+            image
+                .save(canvas.get_surface(), &Path::new("c:/temp/screenshot.jpg"))
+                .unwrap();
+            image
+                .save(canvas.get_surface(), &Path::new("c:/temp/screenshot.bmp"))
+                .unwrap();
+            image
+                .save(canvas.get_surface(), &Path::new("c:/temp/screenshot.tga"))
+                .unwrap();
+        }
     }
 }

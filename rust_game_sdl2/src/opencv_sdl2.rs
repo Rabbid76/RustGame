@@ -5,7 +5,7 @@ use rust_game::surface::Surface;
 use std::error::Error;
 
 pub fn surface_to_sdl2_surface<'a>(
-    surface: &'a mut dyn Surface,
+    surface: &'a dyn Surface,
 ) -> Result<&'a Sdl2Surface, Box<dyn Error>> {
     match surface.as_any().downcast_ref::<Sdl2Surface>() {
         Some(sdl2_surface) => Ok(sdl2_surface),
