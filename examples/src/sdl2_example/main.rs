@@ -36,6 +36,10 @@ pub fn main() {
     let test_svg = image
         .load(&Path::new("./resource/clipart/ice-001.svg"))
         .unwrap();
+    let test_gif = image
+        .load_frames(&Path::new("./resource/animated_clipart/stone_age_1.gif"))
+        .unwrap();
+    let mut gif_frame = 0;
 
     'running: loop {
         let _ = clock.tick_frame_rate(100);
@@ -80,6 +84,16 @@ pub fn main() {
             .get_surface()
             .blit(test_svg.as_ref(), (10, 200), BlendMode::Blend)
             .unwrap();
+        canvas
+            .get_surface()
+            .blit(test_gif[gif_frame / 10].as_ref(), (500, 50), BlendMode::Blend)
+            .unwrap();
+        gif_frame = if (gif_frame+1)/10 >= test_gif.len() {
+            0
+        } else {
+            gif_frame + 1
+        };
+
         canvas.update().unwrap();
         if clock.get_frames() == 1 {
             image

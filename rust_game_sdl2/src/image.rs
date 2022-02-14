@@ -1,13 +1,15 @@
 use crate::opencv_sdl2;
 use crate::surface::Sdl2Surface;
+use image::codecs::gif::GifDecoder;
 use image::io::Reader;
-use image::{DynamicImage, RgbaImage};
+use image::{AnimationDecoder, DynamicImage, RgbaImage};
 use resvg;
 use rust_game::image::Image;
 use rust_game::surface::Surface;
 use sdl2;
 use std::error::Error;
 use std::ffi::OsStr;
+use std::fs::File;
 use std::path::Path;
 use usvg;
 
@@ -75,6 +77,26 @@ impl Sdl2Image {
         Sdl2Image::raw_to_surface((width, height), &pixmap.data().to_vec())
     }
 
+    pub fn load_image_frames(&self, path: &Path) -> Result<Vec<Box<dyn Surface>>, Box<dyn Error>> {
+        let mut frames = GifDecoder::new(File::open(path)?)?.into_frames();
+        //let images = frames.map(|frame| frame?.into_buffer()).collect();
+        let mut images: Vec<Box<dyn Surface>> = Vec::new();
+        loop {
+            match frames.next() {
+                Some(frame) => {
+                    let rgba_image = frame?.into_buffer();
+                    let image = Sdl2Image::raw_to_surface(
+                        (rgba_image.width() as u32, rgba_image.height() as u32),
+                        &DynamicImage::ImageRgba8(rgba_image).into_bytes(),
+                    )?;
+                    images.push(image);
+                }
+                None => break,
+            }
+        }
+        Ok(images)
+    }
+
     fn save_image(&self, surface: &dyn Surface, path: &Path) -> Result<(), Box<dyn Error>> {
         let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
         let w = sdl2_surface.get_width();
@@ -101,6 +123,10 @@ impl Image for Sdl2Image {
             "svg" => self.load_svg(path),
             _ => self.load_image(path),
         }
+    }
+
+    fn load_frames(&self, path: &Path) -> Result<Vec<Box<dyn Surface>>, Box<dyn Error>> {
+        self.load_image_frames(path)
     }
 
     fn save(&self, surface: &dyn Surface, path: &Path) -> Result<(), Box<dyn Error>> {

@@ -4,6 +4,7 @@ use std::path::Path;
 
 pub trait Image {
     fn load(&self, path: &Path) -> Result<Box<dyn Surface>, Box<dyn Error>>;
+    fn load_frames(&self, _: &Path) -> Result<Vec<Box<dyn Surface>>, Box<dyn Error>>;
     fn save(&self, surface: &dyn Surface, path: &Path) -> Result<(), Box<dyn Error>>;
 }
 
@@ -15,6 +16,10 @@ mod context_test {
 
     impl Image for ImageMock {
         fn load(&self, _: &Path) -> Result<Box<dyn Surface>, Box<dyn Error>> {
+            Err("test")?
+        }
+
+        fn load_frames(&self, _: &Path) -> Result<Vec<Box<dyn Surface>>, Box<dyn Error>> {
             Err("test")?
         }
 
