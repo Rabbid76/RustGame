@@ -1,8 +1,9 @@
 use crate::opencv_sdl2;
 use crate::surface::Sdl2Surface;
-use image::codecs::gif::GifDecoder;
+use image::codecs::gif::{GifDecoder, GifEncoder};
 use image::io::Reader;
-use image::{AnimationDecoder, DynamicImage, RgbaImage};
+use image::{AnimationDecoder, ColorType, DynamicImage, Frame, Frames, RgbaImage};
+use image::error::{ImageError, ImageResult};
 use resvg;
 use rust_game::image::Image;
 use rust_game::surface::Surface;
@@ -110,6 +111,32 @@ impl Sdl2Image {
         };
         Ok(())
     }
+
+    pub fn save_image_frames(
+        &self,
+        frames: &Vec<Box<dyn Surface>>,
+        path: &Path,
+    ) -> Result<(), Box<dyn Error>> {
+        let mut gif_encoder = GifEncoder::new(File::create(path)?);
+        let mut animation_frame_vec : Vec<Result<Frame, ImageError>> = Vec::new();
+        for surface in frames.iter() {
+            let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface.as_ref())?;
+            let w = sdl2_surface.get_width();
+            let h = sdl2_surface.get_height();
+            match sdl2_surface.surface.without_lock() {
+                //Some(data) => gif_encoder.encode(data, w, h, ColorType::Rgba8)?,
+                Some(data) => match RgbaImage::from_raw(w, h, data.to_vec()) {
+                    Some(image) => animation_frame_vec.push(Ok(Frame::new(image))),
+                    //Some(image) => gif_encoder.encode_frame(Frame::new(image))?,
+                    _ => Err("cannot create image")?,
+                },
+                _ => Err("no image data")?,
+            };
+        }
+        let animation_frame = Frames::new(Box::new(animation_frame_vec.into_iter()));
+        //gif_encoder.try_encode_frames(animation_frame)?;
+        Ok(())
+    }
 }
 
 impl Image for Sdl2Image {
@@ -131,6 +158,14 @@ impl Image for Sdl2Image {
 
     fn save(&self, surface: &dyn Surface, path: &Path) -> Result<(), Box<dyn Error>> {
         self.save_image(surface, path)
+    }
+
+    fn save_frames(
+        &self,
+        frames: &Vec<Box<dyn Surface>>,
+        path: &Path,
+    ) -> Result<(), Box<dyn Error>> {
+        self.save_image_frames(frames, path)
     }
 }
 

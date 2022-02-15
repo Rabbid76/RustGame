@@ -24,9 +24,9 @@ Possible `Sprite` trait interfaces:
 
 ### Lode and store image
 
-- store frames to gif
 - emoji to surface
 - C++ Image + SVG Reader, link with Rust, test with Windows and Mac. Deploy Crate?
+- capture surface object
 
 ### Rectangle module
 

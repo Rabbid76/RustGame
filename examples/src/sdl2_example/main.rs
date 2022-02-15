@@ -2,7 +2,7 @@ use rust_game::color::ColorU8;
 use rust_game::context::Context;
 use rust_game::events::Event;
 use rust_game::keys::KeyCode;
-use rust_game::surface::{BlendMode, SurfaceBuilder};
+use rust_game::surface::{BlendMode, Surface, SurfaceBuilder};
 use rust_game_sdl2::context::Sdl2Context;
 use std::path::Path;
 
@@ -40,6 +40,7 @@ pub fn main() {
         .load_frames(&Path::new("./resource/animated_clipart/stone_age_1.gif"))
         .unwrap();
     let mut gif_frame = 0;
+    let mut render_frames: Vec<Box<dyn Surface>> = Vec::new();
 
     'running: loop {
         let _ = clock.tick_frame_rate(100);
@@ -86,15 +87,21 @@ pub fn main() {
             .unwrap();
         canvas
             .get_surface()
-            .blit(test_gif[gif_frame / 10].as_ref(), (500, 50), BlendMode::Blend)
+            .blit(
+                test_gif[gif_frame / 10].as_ref(),
+                (500, 50),
+                BlendMode::Blend,
+            )
             .unwrap();
-        gif_frame = if (gif_frame+1)/10 >= test_gif.len() {
+        gif_frame = if (gif_frame + 1) / 10 >= test_gif.len() {
             0
         } else {
             gif_frame + 1
         };
 
         canvas.update().unwrap();
+
+        /*
         if clock.get_frames() == 1 {
             image
                 .save(canvas.get_surface(), &Path::new("c:/temp/screenshot.png"))
@@ -107,6 +114,14 @@ pub fn main() {
                 .unwrap();
             image
                 .save(canvas.get_surface(), &Path::new("c:/temp/screenshot.tga"))
+                .unwrap();
+        }
+        */
+        if clock.get_frames() < 10 {
+            render_frames.push(canvas.get_surface().clone().unwrap());
+        } else if clock.get_frames() == 10 {
+            image
+                .save_frames(&render_frames, Path::new("c:/temp/screenshot.gif"))
                 .unwrap();
         }
     }
