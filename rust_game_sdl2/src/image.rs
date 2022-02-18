@@ -1,9 +1,11 @@
 use crate::opencv_sdl2;
 use crate::surface::Sdl2Surface;
 use image::codecs::gif::{GifDecoder, GifEncoder};
+use image::error::ImageError;
+//use image::error::ImageResult;
 use image::io::Reader;
-use image::{AnimationDecoder, ColorType, DynamicImage, Frame, Frames, RgbaImage};
-use image::error::{ImageError, ImageResult};
+use image::{AnimationDecoder, DynamicImage, Frame, Frames, RgbaImage};
+//use image::ColorType;
 use resvg;
 use rust_game::image::Image;
 use rust_game::surface::Surface;
@@ -118,7 +120,7 @@ impl Sdl2Image {
         path: &Path,
     ) -> Result<(), Box<dyn Error>> {
         let mut gif_encoder = GifEncoder::new(File::create(path)?);
-        let mut animation_frame_vec : Vec<Result<Frame, ImageError>> = Vec::new();
+        let mut animation_frame_vec: Vec<Result<Frame, ImageError>> = Vec::new();
         for surface in frames.iter() {
             let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface.as_ref())?;
             let w = sdl2_surface.get_width();
@@ -134,7 +136,7 @@ impl Sdl2Image {
             };
         }
         let animation_frame = Frames::new(Box::new(animation_frame_vec.into_iter()));
-        //gif_encoder.try_encode_frames(animation_frame)?;
+        gif_encoder.try_encode_frames(animation_frame)?;
         Ok(())
     }
 }

@@ -21,8 +21,8 @@ pub unsafe fn sdl2_surface_to_opencv_mat(
     let h = (*raw_surface).h as i32;
     let step = (w * 4) as usize;
     Ok(core::Mat::new_rows_cols_with_data(
-        w,
         h,
+        w,
         core::CV_8UC4,
         (*raw_surface).pixels,
         step,
@@ -37,7 +37,7 @@ pub unsafe fn sdl2_surface_range_to_opencv_mat(
     let w = (*raw_surface).w as i32;
     let h = (*raw_surface).h as i32;
     let step = (w * 4) as usize;
-    let mat = core::Mat::new_rows_cols_with_data(w, h, core::CV_8UC4, (*raw_surface).pixels, step)?;
+    let mat = core::Mat::new_rows_cols_with_data(h, w, core::CV_8UC4, (*raw_surface).pixels, step)?;
     Ok(core::Mat::rowscols(
         &mat,
         &core::Range::new(region.get_top(), region.get_bottom())?,

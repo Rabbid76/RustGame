@@ -7,6 +7,7 @@ use rust_game::draw::Draw;
 use rust_game::rectangle::Rect;
 use rust_game::surface::Surface;
 use std::error::Error;
+use std::ops::Range;
 
 pub struct Sdl2Draw {}
 
@@ -30,6 +31,13 @@ impl Sdl2Draw {
         core::Point {
             x: point.0,
             y: point.1,
+        }
+    }
+
+    fn tuple_to_opencv_size(point: (i32, i32)) -> core::Size {
+        core::Size {
+            width: point.0,
+            height: point.1,
         }
     }
 
@@ -68,7 +76,7 @@ impl Draw for Sdl2Draw {
         antialias: bool,
         color: &dyn Color,
         rectangle: Rect,
-        width: i32,
+        line_width: i32,
     ) -> Result<Rect, Box<dyn Error>> {
         let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
         unsafe {
@@ -83,7 +91,7 @@ impl Draw for Sdl2Draw {
                 &mut mat,
                 Sdl2Draw::rectangle_to_opencv_rectangle(&rectangle),
                 Sdl2Draw::color_to_opencv_scalar(color),
-                width,
+                line_width,
                 line_type,
                 shift,
             )?;
@@ -98,7 +106,7 @@ impl Draw for Sdl2Draw {
         color: &dyn Color,
         center: (i32, i32),
         radius: i32,
-        width: i32,
+        line_width: i32,
     ) -> Result<Rect, Box<dyn Error>> {
         let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
         unsafe {
@@ -114,7 +122,7 @@ impl Draw for Sdl2Draw {
                 Sdl2Draw::tuple_to_opencv_point(center),
                 radius,
                 Sdl2Draw::color_to_opencv_scalar(color),
-                width,
+                line_width,
                 line_type,
                 shift,
             )?;
@@ -128,6 +136,160 @@ impl Draw for Sdl2Draw {
         .clip(&surface.get_rect()))
     }
 
+    fn ellipse(
+        &self,
+        surface: &mut dyn Surface,
+        antialias: bool,
+        color: &dyn Color,
+        center: (i32, i32),
+        size: (i32, i32),
+        angle: f32,
+        line_width: i32,
+    ) -> Result<Rect, Box<dyn Error>> {
+        let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
+        unsafe {
+            let mut mat = opencv_sdl2::sdl2_surface_to_opencv_mat(&sdl2_surface.surface)?;
+            let line_type = if antialias {
+                imgproc::LINE_AA
+            } else {
+                imgproc::FILLED
+            };
+            let shift = 0;
+            imgproc::ellipse(
+                &mut mat,
+                Sdl2Draw::tuple_to_opencv_point(center),
+                Sdl2Draw::tuple_to_opencv_size(size),
+                angle as f64, 
+                0.0,
+                360.0,
+                Sdl2Draw::color_to_opencv_scalar(color),
+                line_width,
+                line_type,
+                shift,
+            )?;
+        }
+        let radius = size.0.max(size.1);
+        Ok(Rect::new(
+            center.0 - radius as i32,
+            center.1 - radius as i32,
+            radius * 2,
+            radius * 2,
+        )
+        .clip(&surface.get_rect()))
+    }
+
+    fn arc(
+        &self,
+        surface: &mut dyn Surface,
+        antialias: bool,
+        color: &dyn Color,
+        center: (i32, i32),
+        radius: i32,
+        arc_angle: Range<f32>,
+        line_width: i32,
+    ) -> Result<Rect, Box<dyn Error>> {
+        let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
+        unsafe {
+            let mut mat = opencv_sdl2::sdl2_surface_to_opencv_mat(&sdl2_surface.surface)?;
+            let line_type = if antialias {
+                imgproc::LINE_AA
+            } else {
+                imgproc::FILLED
+            };
+            let shift = 0;
+            imgproc::ellipse(
+                &mut mat,
+                Sdl2Draw::tuple_to_opencv_point(center),
+                Sdl2Draw::tuple_to_opencv_size((radius, radius)),
+                0.0, 
+                arc_angle.start as f64,
+                arc_angle.end as f64,
+                Sdl2Draw::color_to_opencv_scalar(color),
+                line_width,
+                line_type,
+                shift,
+            )?;
+        }
+        Ok(Rect::new(
+            center.0 - radius as i32,
+            center.1 - radius as i32,
+            radius * 2,
+            radius * 2,
+        )
+        .clip(&surface.get_rect()))
+    }
+
+    fn elliptical_arc(
+        &self,
+        surface: &mut dyn Surface,
+        antialias: bool,
+        color: &dyn Color,
+        center: (i32, i32),
+        size: (i32, i32),
+        angle: f32,
+        arc_angle: Range<f32>,
+        line_width: i32,
+    ) -> Result<Rect, Box<dyn Error>> {
+        let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
+        unsafe {
+            let mut mat = opencv_sdl2::sdl2_surface_to_opencv_mat(&sdl2_surface.surface)?;
+            let line_type = if antialias {
+                imgproc::LINE_AA
+            } else {
+                imgproc::FILLED
+            };
+            let shift = 0;
+            imgproc::ellipse(
+                &mut mat,
+                Sdl2Draw::tuple_to_opencv_point(center),
+                Sdl2Draw::tuple_to_opencv_size(size),
+                angle as f64, 
+                arc_angle.start as f64,
+                arc_angle.end as f64,
+                Sdl2Draw::color_to_opencv_scalar(color),
+                line_width,
+                line_type,
+                shift,
+            )?;
+        }
+        let radius = size.0.max(size.1);
+        Ok(Rect::new(
+            center.0 - radius as i32,
+            center.1 - radius as i32,
+            radius * 2,
+            radius * 2,
+        )
+        .clip(&surface.get_rect()))
+    }
+
+    fn polygon(
+        &self,
+        surface: &mut dyn Surface,
+        antialias: bool,
+        color: &dyn Color,
+        points: &Vec<(i32, i32)>,
+    ) -> Result<Rect, Box<dyn Error>> {
+        let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
+        unsafe {
+            let mut mat = opencv_sdl2::sdl2_surface_to_opencv_mat(&sdl2_surface.surface)?;
+            let line_type = if antialias {
+                imgproc::LINE_AA
+            } else {
+                imgproc::FILLED
+            };
+            let shift = 0;
+            imgproc::fill_poly(
+                &mut mat,
+                &Sdl2Draw::tuple_vec_to_opencv_vector_of_points(points),
+                Sdl2Draw::color_to_opencv_scalar(color),
+                line_type,
+                shift,
+                Sdl2Draw::tuple_to_opencv_point((0, 0)),
+            )?;
+        }
+        Ok(Sdl2Draw::tuple_vec_enclosing_rectangle(points).clip(&surface.get_rect()))
+    }
+
     fn line(
         &self,
         surface: &mut dyn Surface,
@@ -135,7 +297,7 @@ impl Draw for Sdl2Draw {
         color: &dyn Color,
         start: (i32, i32),
         end: (i32, i32),
-        width: i32,
+        line_width: i32,
     ) -> Result<Rect, Box<dyn Error>> {
         let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
         unsafe {
@@ -151,7 +313,7 @@ impl Draw for Sdl2Draw {
                 Sdl2Draw::tuple_to_opencv_point(start),
                 Sdl2Draw::tuple_to_opencv_point(end),
                 Sdl2Draw::color_to_opencv_scalar(color),
-                width,
+                line_width,
                 line_type,
                 shift,
             )?;
@@ -166,7 +328,7 @@ impl Draw for Sdl2Draw {
         color: &dyn Color,
         close: bool,
         points: &Vec<(i32, i32)>,
-        width: i32,
+        line_width: i32,
     ) -> Result<Rect, Box<dyn Error>> {
         let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
         unsafe {
@@ -182,7 +344,7 @@ impl Draw for Sdl2Draw {
                 &Sdl2Draw::tuple_vec_to_opencv_vector_of_points(points),
                 close,
                 Sdl2Draw::color_to_opencv_scalar(color),
-                width,
+                line_width,
                 line_type,
                 shift,
             )?;

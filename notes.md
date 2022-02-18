@@ -16,7 +16,7 @@ Possible `Sprite` trait interfaces:
 
 ### Draw methods
 
-- rect, line, polygon, ellipse
+- transparent shapes - if alpha
 
 ### Surface
 
