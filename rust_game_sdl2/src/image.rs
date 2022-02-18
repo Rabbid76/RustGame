@@ -30,19 +30,11 @@ impl Sdl2Image {
 impl Sdl2Image {
     pub fn load_image_to_raw(filename: &str) -> Result<(usize, usize, Vec<u8>), Box<dyn Error>> {
         let rgba_image = Reader::open(filename)?.decode()?.to_rgba8();
-        Ok((
-            rgba_image.width() as usize,
-            rgba_image.height() as usize,
-            DynamicImage::ImageRgba8(rgba_image).into_bytes(),
-        ))
+        Ok((rgba_image.width() as usize, rgba_image.height() as usize, DynamicImage::ImageRgba8(rgba_image).into_bytes()))
     }
 
-    pub fn raw_to_surface(
-        size: (u32, u32),
-        src_data: &Vec<u8>,
-    ) -> Result<Box<dyn Surface>, Box<dyn Error>> {
-        let mut sdl2_surface =
-            sdl2::surface::Surface::new(size.0, size.1, sdl2::pixels::PixelFormatEnum::ABGR8888)?;
+    pub fn raw_to_surface(size: (u32, u32), src_data: &Vec<u8>) -> Result<Box<dyn Surface>, Box<dyn Error>> {
+        let mut sdl2_surface = sdl2::surface::Surface::new(size.0, size.1, sdl2::pixels::PixelFormatEnum::ABGR8888)?;
         match sdl2_surface.without_lock_mut() {
             Some(data) => data.copy_from_slice(src_data),
             _ => Err("surface data")?,
@@ -61,22 +53,14 @@ impl Sdl2Image {
     pub fn load_svg(&self, path: &Path) -> Result<Box<dyn Surface>, Box<dyn Error>> {
         let mut opt = usvg::Options::default();
         // Get file's absolute directory.
-        opt.resources_dir = std::fs::canonicalize(path)
-            .ok()
-            .and_then(|p| p.parent().map(|p| p.to_path_buf()));
+        opt.resources_dir = std::fs::canonicalize(path).ok().and_then(|p| p.parent().map(|p| p.to_path_buf()));
         opt.fontdb.load_system_fonts();
         let svg_data = std::fs::read(path)?;
         let rtree = usvg::Tree::from_data(&svg_data, &opt.to_ref())?;
         let pixmap_size = rtree.svg_node().size.to_screen_size();
         let (width, height) = (pixmap_size.width(), pixmap_size.height());
         let mut pixmap = tiny_skia::Pixmap::new(width, height).unwrap();
-        resvg::render(
-            &rtree,
-            usvg::FitTo::Original,
-            tiny_skia::Transform::default(),
-            pixmap.as_mut(),
-        )
-        .unwrap();
+        resvg::render(&rtree, usvg::FitTo::Original, tiny_skia::Transform::default(), pixmap.as_mut()).unwrap();
         Sdl2Image::raw_to_surface((width, height), &pixmap.data().to_vec())
     }
 
@@ -114,11 +98,7 @@ impl Sdl2Image {
         Ok(())
     }
 
-    pub fn save_image_frames(
-        &self,
-        frames: &Vec<Box<dyn Surface>>,
-        path: &Path,
-    ) -> Result<(), Box<dyn Error>> {
+    pub fn save_image_frames(&self, frames: &Vec<Box<dyn Surface>>, path: &Path) -> Result<(), Box<dyn Error>> {
         let mut gif_encoder = GifEncoder::new(File::create(path)?);
         let mut animation_frame_vec: Vec<Result<Frame, ImageError>> = Vec::new();
         for surface in frames.iter() {
@@ -143,11 +123,7 @@ impl Sdl2Image {
 
 impl Image for Sdl2Image {
     fn load(&self, path: &Path) -> Result<Box<dyn Surface>, Box<dyn Error>> {
-        let extension = path
-            .extension()
-            .and_then(OsStr::to_str)
-            .unwrap()
-            .to_ascii_lowercase();
+        let extension = path.extension().and_then(OsStr::to_str).unwrap().to_ascii_lowercase();
         match extension.as_str() {
             "svg" => self.load_svg(path),
             _ => self.load_image(path),
@@ -162,11 +138,7 @@ impl Image for Sdl2Image {
         self.save_image(surface, path)
     }
 
-    fn save_frames(
-        &self,
-        frames: &Vec<Box<dyn Surface>>,
-        path: &Path,
-    ) -> Result<(), Box<dyn Error>> {
+    fn save_frames(&self, frames: &Vec<Box<dyn Surface>>, path: &Path) -> Result<(), Box<dyn Error>> {
         self.save_image_frames(frames, path)
     }
 }

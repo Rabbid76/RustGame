@@ -38,10 +38,7 @@ impl SurfaceBuilder for Sdl2Context {
         Sdl2Surface::new_alpha(size)
     }
 
-    fn new_surface_with_color(
-        size: (u32, u32),
-        color: &dyn Color,
-    ) -> Result<Box<dyn Surface>, Box<dyn Error>> {
+    fn new_surface_with_color(size: (u32, u32), color: &dyn Color) -> Result<Box<dyn Surface>, Box<dyn Error>> {
         let mut surface = Sdl2Surface::new_alpha(size)?;
         surface.fill(color)?;
         Ok(surface)
@@ -58,10 +55,7 @@ impl Context for Sdl2Context {
     fn time(&self) -> Result<Box<dyn Time>, Box<dyn Error>> {
         Ok(Box::new(TimeStd::from(self.context_data.clone())?))
     }
-    fn new_surface_alpha_from_size(
-        &self,
-        size: (u32, u32),
-    ) -> Result<Box<dyn Surface>, Box<dyn Error>> {
+    fn new_surface_alpha_from_size(&self, size: (u32, u32)) -> Result<Box<dyn Surface>, Box<dyn Error>> {
         Sdl2Surface::new_alpha(size)
     }
     fn draw(&self) -> Result<Box<dyn Draw>, Box<dyn Error>> {

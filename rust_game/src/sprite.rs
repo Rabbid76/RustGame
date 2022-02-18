@@ -110,9 +110,7 @@ pub trait SpriteGroup {
     fn update(&mut self) -> Result<(), Box<dyn Error>> {
         for sprite in self.sprites_mut() {
             let rectangle = match sprite.rectangle_animation() {
-                Some((rectangle_animation, rectangle)) => {
-                    Some(rectangle_animation.update_rectangle(rectangle))
-                }
+                Some((rectangle_animation, rectangle)) => Some(rectangle_animation.update_rectangle(rectangle)),
                 _ => Option::None,
             };
             match rectangle {
@@ -132,17 +130,9 @@ pub trait SpriteGroup {
             let _ = match sprite.image_animation() {
                 Some((image_animation, image)) => {
                     let animated_image = image_animation.transform_image(image);
-                    surface.blit(
-                        animated_image.as_ref(),
-                        sprite.rect().get_top_left(),
-                        BlendMode::Blend,
-                    )
+                    surface.blit(animated_image.as_ref(), sprite.rect().get_top_left(), BlendMode::Blend)
                 }
-                None => surface.blit(
-                    sprite.image(),
-                    sprite.rect().get_top_left(),
-                    BlendMode::Blend,
-                ),
+                None => surface.blit(sprite.image(), sprite.rect().get_top_left(), BlendMode::Blend),
             }?;
         }
         Ok(())

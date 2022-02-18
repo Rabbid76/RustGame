@@ -23,15 +23,11 @@ impl Events for Sdl2Events {
         for event in self.sdl_context.event_pump()?.poll_iter() {
             match event {
                 sdl2::event::Event::Quit { .. } => events.push(Event::Quit {}),
-                sdl2::event::Event::KeyDown {
-                    keycode: Some(key), ..
-                } => events.push(Event::KeyDown {
+                sdl2::event::Event::KeyDown { keycode: Some(key), .. } => events.push(Event::KeyDown {
                     key_code: key as i32,
                     key: FromPrimitive::from_i32(key as i32),
                 }),
-                sdl2::event::Event::KeyUp {
-                    keycode: Some(key), ..
-                } => events.push(Event::KeyDown {
+                sdl2::event::Event::KeyUp { keycode: Some(key), .. } => events.push(Event::KeyDown {
                     key_code: key as i32,
                     key: FromPrimitive::from_i32(key as i32),
                 }),

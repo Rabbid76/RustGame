@@ -11,12 +11,7 @@ pub struct HypotrochoidAnimation {
 }
 
 impl HypotrochoidAnimation {
-    pub fn new(
-        start: f32,
-        step: f32,
-        center: (i32, i32),
-        parameter: (f32, f32, f32),
-    ) -> HypotrochoidAnimation {
+    pub fn new(start: f32, step: f32, center: (i32, i32), parameter: (f32, f32, f32)) -> HypotrochoidAnimation {
         HypotrochoidAnimation {
             pos: start,
             step,
@@ -48,10 +43,7 @@ pub struct ColorAnimation {
 
 impl ColorAnimation {
     pub fn new(frame: u32, frame_to_color: Box<dyn ToColor<u32>>) -> ColorAnimation {
-        ColorAnimation {
-            frame,
-            frame_to_color,
-        }
+        ColorAnimation { frame, frame_to_color }
     }
 }
 

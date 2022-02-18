@@ -17,29 +17,18 @@ pub enum BlendMode {
 pub trait Surface {
     fn as_any<'a>(&'a self) -> &'a dyn Any;
     fn clone(&self) -> Result<Box<dyn Surface>, Box<dyn Error>>;
-    fn modulate_surface_and_color(
-        &self,
-        color: &dyn Color,
-    ) -> Result<Box<dyn Surface>, Box<dyn Error>>;
+    fn modulate_surface_and_color(&self, color: &dyn Color) -> Result<Box<dyn Surface>, Box<dyn Error>>;
     fn get_width(&self) -> u32;
     fn get_height(&self) -> u32;
     fn get_size(&self) -> (u32, u32);
     fn get_rect(&self) -> Rect;
     fn fill(&mut self, color: &dyn Color) -> Result<(), Box<dyn Error>>;
-    fn blit(
-        &mut self,
-        source_surface: &dyn Surface,
-        position: (i32, i32),
-        blend_mode: BlendMode,
-    ) -> Result<Rect, Box<dyn Error>>;
+    fn blit(&mut self, source_surface: &dyn Surface, position: (i32, i32), blend_mode: BlendMode) -> Result<Rect, Box<dyn Error>>;
 }
 
 pub trait SurfaceBuilder {
     fn new_surface_alpha(size: (u32, u32)) -> Result<Box<dyn Surface>, Box<dyn Error>>;
-    fn new_surface_with_color(
-        size: (u32, u32),
-        color: &dyn Color,
-    ) -> Result<Box<dyn Surface>, Box<dyn Error>>;
+    fn new_surface_with_color(size: (u32, u32), color: &dyn Color) -> Result<Box<dyn Surface>, Box<dyn Error>>;
 }
 
 #[cfg(test)]

@@ -27,10 +27,7 @@ impl Surface for SurfaceMock {
         }))
     }
 
-    fn modulate_surface_and_color(
-        &self,
-        color: &dyn Color,
-    ) -> Result<Box<dyn Surface>, Box<dyn Error>> {
+    fn modulate_surface_and_color(&self, color: &dyn Color) -> Result<Box<dyn Surface>, Box<dyn Error>> {
         Ok(Box::new(SurfaceMock {
             fill_color: ColorU8::new_rgba(color.r(), color.g(), color.b(), color.a()),
         }))
@@ -57,12 +54,7 @@ impl Surface for SurfaceMock {
         Ok(())
     }
 
-    fn blit(
-        &mut self,
-        _: &dyn Surface,
-        _: (i32, i32),
-        _: BlendMode,
-    ) -> Result<Rect, Box<dyn Error>> {
+    fn blit(&mut self, _: &dyn Surface, _: (i32, i32), _: BlendMode) -> Result<Rect, Box<dyn Error>> {
         Ok(Rect::new(0, 0, 0, 0))
     }
 }

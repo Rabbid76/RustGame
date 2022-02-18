@@ -32,9 +32,7 @@ impl ColorRGBA<u8> {
     }
 
     pub fn new_rgb(r: u8, g: u8, b: u8) -> ColorU8 {
-        ColorU8 {
-            rgba: [r, g, b, 255],
-        }
+        ColorU8 { rgba: [r, g, b, 255] }
     }
 
     pub fn new_gray(grayscale: u8) -> ColorU8 {

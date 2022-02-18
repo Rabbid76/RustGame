@@ -14,10 +14,6 @@ Possible `Sprite` trait interfaces:
 
 ### OpenCV Blending
 
-### Draw methods
-
-- transparent shapes - if alpha
-
 ### Surface
 
 - Subsurface
@@ -27,6 +23,10 @@ Possible `Sprite` trait interfaces:
 - emoji to surface
 - C++ Image + SVG Reader, link with Rust, test with Windows and Mac. Deploy Crate?
 - capture surface object
+
+### Textures
+
+- checker texture
 
 ### Rectangle module
 

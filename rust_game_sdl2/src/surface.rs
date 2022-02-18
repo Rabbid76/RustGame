@@ -14,11 +14,7 @@ pub struct Sdl2Surface {
 impl Sdl2Surface {
     pub fn new_alpha(size: (u32, u32)) -> Result<Box<dyn Surface>, Box<dyn Error>> {
         Ok(Box::new(Sdl2Surface {
-            surface: sdl2::surface::Surface::new(
-                size.0,
-                size.1,
-                sdl2::pixels::PixelFormatEnum::ABGR8888,
-            )?,
+            surface: sdl2::surface::Surface::new(size.0, size.1, sdl2::pixels::PixelFormatEnum::ABGR8888)?,
         }))
     }
 
@@ -34,13 +30,9 @@ impl Sdl2Surface {
         blend_mode: BlendMode,
     ) -> Result<(), Box<dyn Error>> {
         match blend_mode {
-            BlendMode::MultiplyRGBA => Sdl2Surface::blend_sdl2_surface_opencv(
-                dest_surface,
-                source_surface,
-                dest_rect,
-                src_rect,
-                blend_mode,
-            ),
+            BlendMode::MultiplyRGBA => {
+                Sdl2Surface::blend_sdl2_surface_opencv(dest_surface, source_surface, dest_rect, src_rect, blend_mode)
+            }
             _ => Sdl2Surface::blend_sdl2_surface_sdl2(
                 dest_surface,
                 source_surface,
@@ -52,12 +44,7 @@ impl Sdl2Surface {
     }
 
     fn rect_to_sdl2_rect(rect: &Rect) -> sdl2::rect::Rect {
-        sdl2::rect::Rect::new(
-            rect.get_left(),
-            rect.get_top(),
-            rect.get_width() as u32,
-            rect.get_height() as u32,
-        )
+        sdl2::rect::Rect::new(rect.get_left(), rect.get_top(), rect.get_width() as u32, rect.get_height() as u32)
     }
 
     fn blend_mode_to_sdl2_blend_mode(blend_mode: BlendMode) -> sdl2::render::BlendMode {
@@ -99,10 +86,8 @@ impl Sdl2Surface {
         unsafe {
             match blend_mode {
                 BlendMode::MultiplyRGBA => {
-                    let mut dest_mat =
-                        opencv_sdl2::sdl2_surface_range_to_opencv_mat(dest_surface, dest_rect)?;
-                    let src_mat =
-                        opencv_sdl2::sdl2_surface_range_to_opencv_mat(source_surface, src_rect)?;
+                    let mut dest_mat = opencv_sdl2::sdl2_surface_range_to_opencv_mat(dest_surface, dest_rect)?;
+                    let src_mat = opencv_sdl2::sdl2_surface_range_to_opencv_mat(source_surface, src_rect)?;
                     core::multiply(&dest_mat.clone(), &src_mat, &mut dest_mat, 1.0 / 255.0, -1)?;
                 }
                 _ => Err("not yet implemented")?,
@@ -118,36 +103,21 @@ impl Surface for Sdl2Surface {
     }
 
     fn clone(&self) -> Result<Box<dyn Surface>, Box<dyn Error>> {
-        let mut surface_copy = sdl2::surface::Surface::new(
-            self.surface.width(),
-            self.surface.height(),
-            sdl2::pixels::PixelFormatEnum::ABGR8888,
-        )?;
-        self.surface
-            .blit(Option::None, &mut surface_copy, Option::None)?;
-        Ok(Box::new(Sdl2Surface {
-            surface: surface_copy,
-        }))
+        let mut surface_copy =
+            sdl2::surface::Surface::new(self.surface.width(), self.surface.height(), sdl2::pixels::PixelFormatEnum::ABGR8888)?;
+        self.surface.blit(Option::None, &mut surface_copy, Option::None)?;
+        Ok(Box::new(Sdl2Surface { surface: surface_copy }))
     }
 
-    fn modulate_surface_and_color(
-        &self,
-        color: &dyn Color,
-    ) -> Result<Box<dyn Surface>, Box<dyn Error>> {
+    fn modulate_surface_and_color(&self, color: &dyn Color) -> Result<Box<dyn Surface>, Box<dyn Error>> {
         let mut color_surface = Sdl2Surface {
-            surface: sdl2::surface::Surface::new(
-                self.surface.width(),
-                self.surface.height(),
-                sdl2::pixels::PixelFormatEnum::ABGR8888,
-            )?,
+            surface: sdl2::surface::Surface::new(self.surface.width(), self.surface.height(), sdl2::pixels::PixelFormatEnum::ABGR8888)?,
         };
         color_surface.fill(color)?;
         //let mut final_surface = self.clone()?;
         //final_surface.blit(&color_surface, (0, 0), BlendMode::Multiply)?;
         //Ok(final_surface)
-        color_surface
-            .blit(self, (0, 0), BlendMode::MultiplyRGBA)
-            .unwrap();
+        color_surface.blit(self, (0, 0), BlendMode::MultiplyRGBA).unwrap();
         Ok(Box::new(color_surface))
     }
 
@@ -164,43 +134,23 @@ impl Surface for Sdl2Surface {
     }
 
     fn get_rect(&self) -> Rect {
-        Rect::new(
-            0,
-            0,
-            self.surface.width() as i32,
-            self.surface.height() as i32,
-        )
+        Rect::new(0, 0, self.surface.width() as i32, self.surface.height() as i32)
     }
 
     fn fill(&mut self, color: &dyn Color) -> Result<(), Box<dyn Error>> {
-        self.surface.fill_rect(
-            Option::None,
-            sdl2::pixels::Color::RGBA(color.r(), color.g(), color.b(), color.a()),
-        )?;
+        self.surface.fill_rect(Option::None, sdl2::pixels::Color::RGBA(color.r(), color.g(), color.b(), color.a()))?;
         Ok(())
     }
 
-    fn blit(
-        &mut self,
-        source_surface: &dyn Surface,
-        position: (i32, i32),
-        blend_mode: BlendMode,
-    ) -> Result<Rect, Box<dyn Error>> {
+    fn blit(&mut self, source_surface: &dyn Surface, position: (i32, i32), blend_mode: BlendMode) -> Result<Rect, Box<dyn Error>> {
         let src_rect = source_surface.get_rect().move_(position.0, position.1);
         let dest_rect = self.get_rect().clip(&src_rect);
         let src_rect = src_rect.clip(&dest_rect).move_(-position.0, -position.1);
-        let sdl2_source_surface: &Sdl2Surface =
-            match source_surface.as_any().downcast_ref::<Sdl2Surface>() {
-                Some(sdl2_source_surface) => sdl2_source_surface,
-                None => Err("not a sdl2 surface")?,
-            };
-        Sdl2Surface::blend_sdl2_surface(
-            &mut self.surface,
-            &sdl2_source_surface.surface,
-            &dest_rect,
-            &src_rect,
-            blend_mode,
-        )?;
+        let sdl2_source_surface: &Sdl2Surface = match source_surface.as_any().downcast_ref::<Sdl2Surface>() {
+            Some(sdl2_source_surface) => sdl2_source_surface,
+            None => Err("not a sdl2 surface")?,
+        };
+        Sdl2Surface::blend_sdl2_surface(&mut self.surface, &sdl2_source_surface.surface, &dest_rect, &src_rect, blend_mode)?;
         Ok(dest_rect)
     }
 }

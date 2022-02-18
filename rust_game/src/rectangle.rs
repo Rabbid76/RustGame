@@ -253,22 +253,12 @@ impl Rect {
         }
     }
 
-    pub fn clip_line(
-        &self,
-        start: (i32, i32),
-        end: (i32, i32),
-    ) -> Option<((i32, i32), (i32, i32))> {
+    pub fn clip_line(&self, start: (i32, i32), end: (i32, i32)) -> Option<((i32, i32), (i32, i32))> {
         let line_rect = Rect::new_from_points(start, end);
         if self.collide_rect(&line_rect) {
             Some((
-                (
-                    start.0.clamp(self.get_left(), self.get_right()),
-                    start.1.clamp(self.get_top(), self.get_bottom()),
-                ),
-                (
-                    end.0.clamp(self.get_left(), self.get_right()),
-                    end.1.clamp(self.get_top(), self.get_bottom()),
-                ),
+                (start.0.clamp(self.get_left(), self.get_right()), start.1.clamp(self.get_top(), self.get_bottom())),
+                (end.0.clamp(self.get_left(), self.get_right()), end.1.clamp(self.get_top(), self.get_bottom())),
             ))
         } else {
             None
@@ -299,10 +289,7 @@ impl Rect {
     }
 
     pub fn collide_point(&self, x: i32, y: i32) -> bool {
-        self.get_left() <= x
-            && x <= self.get_right()
-            && self.get_top() <= y
-            && y <= self.get_bottom()
+        self.get_left() <= x && x <= self.get_right() && self.get_top() <= y && y <= self.get_bottom()
     }
 
     pub fn collide_rect(&self, rect: &Rect) -> bool {
@@ -676,15 +663,9 @@ mod rect_test {
     #[test]
     fn clip_line_test() {
         assert!(Rect::new(10, 10, 10, 10).clip_line((20, 20), (30, 30)) == None);
-        assert!(
-            Rect::new(10, 10, 10, 10).clip_line((0, 0), (30, 30)) == Some(((10, 10), (20, 20)))
-        );
-        assert!(
-            Rect::new(10, 10, 10, 10).clip_line((30, 0), (0, 30)) == Some(((20, 10), (10, 20)))
-        );
-        assert!(
-            Rect::new(10, 10, 10, 10).clip_line((0, 30), (30, 0)) == Some(((10, 20), (20, 10)))
-        );
+        assert!(Rect::new(10, 10, 10, 10).clip_line((0, 0), (30, 30)) == Some(((10, 10), (20, 20))));
+        assert!(Rect::new(10, 10, 10, 10).clip_line((30, 0), (0, 30)) == Some(((20, 10), (10, 20))));
+        assert!(Rect::new(10, 10, 10, 10).clip_line((0, 30), (30, 0)) == Some(((10, 20), (20, 10))));
     }
 
     #[test]

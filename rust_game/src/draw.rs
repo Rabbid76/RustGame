@@ -94,26 +94,11 @@ mod test_surface {
     struct DrawMock {}
 
     impl Draw for DrawMock {
-        fn rectangle(
-            &self,
-            _: &mut dyn Surface,
-            _: bool,
-            _: &dyn Color,
-            _: Rect,
-            _: i32,
-        ) -> Result<Rect, Box<dyn Error>> {
+        fn rectangle(&self, _: &mut dyn Surface, _: bool, _: &dyn Color, _: Rect, _: i32) -> Result<Rect, Box<dyn Error>> {
             Err("test")?
         }
 
-        fn circle(
-            &self,
-            _: &mut dyn Surface,
-            _: bool,
-            _: &dyn Color,
-            _: (i32, i32),
-            _: i32,
-            _: i32,
-        ) -> Result<Rect, Box<dyn Error>> {
+        fn circle(&self, _: &mut dyn Surface, _: bool, _: &dyn Color, _: (i32, i32), _: i32, _: i32) -> Result<Rect, Box<dyn Error>> {
             Err("test")?
         }
 
@@ -129,7 +114,7 @@ mod test_surface {
         ) -> Result<Rect, Box<dyn Error>> {
             Err("test")?
         }
-    
+
         fn arc(
             &self,
             _: &mut dyn Surface,
@@ -142,7 +127,7 @@ mod test_surface {
         ) -> Result<Rect, Box<dyn Error>> {
             Err("test")?
         }
-    
+
         fn elliptical_arc(
             &self,
             _: &mut dyn Surface,
@@ -157,37 +142,15 @@ mod test_surface {
             Err("test")?
         }
 
-        fn polygon(
-            &self,
-            _: &mut dyn Surface,
-            _: bool,
-            _: &dyn Color,
-            _: &Vec<(i32, i32)>,
-        ) -> Result<Rect, Box<dyn Error>> {
+        fn polygon(&self, _: &mut dyn Surface, _: bool, _: &dyn Color, _: &Vec<(i32, i32)>) -> Result<Rect, Box<dyn Error>> {
             Err("test")?
         }
 
-        fn line(
-            &self,
-            _: &mut dyn Surface,
-            _: bool,
-            _: &dyn Color,
-            _: (i32, i32),
-            _: (i32, i32),
-            _: i32,
-        ) -> Result<Rect, Box<dyn Error>> {
+        fn line(&self, _: &mut dyn Surface, _: bool, _: &dyn Color, _: (i32, i32), _: (i32, i32), _: i32) -> Result<Rect, Box<dyn Error>> {
             Err("test")?
         }
 
-        fn lines(
-            &self,
-            _: &mut dyn Surface,
-            _: bool,
-            _: &dyn Color,
-            _: bool,
-            _: &Vec<(i32, i32)>,
-            _: i32,
-        ) -> Result<Rect, Box<dyn Error>> {
+        fn lines(&self, _: &mut dyn Surface, _: bool, _: &dyn Color, _: bool, _: &Vec<(i32, i32)>, _: i32) -> Result<Rect, Box<dyn Error>> {
             Err("test")?
         }
     }
