@@ -1,6 +1,7 @@
 use crate::color::Color;
 use crate::rectangle::Rect;
 use crate::surface::Surface;
+pub use crate::utility::draw_utility::DrawUtility;
 use std::error::Error;
 use std::ops::Range;
 
@@ -64,6 +65,7 @@ pub trait Draw {
         antialias: bool,
         color: &dyn Color,
         points: &Vec<(i32, i32)>,
+        line_width: i32,
     ) -> Result<Rect, Box<dyn Error>>;
 
     fn line(
@@ -142,7 +144,7 @@ mod test_surface {
             Err("test")?
         }
 
-        fn polygon(&self, _: &mut dyn Surface, _: bool, _: &dyn Color, _: &Vec<(i32, i32)>) -> Result<Rect, Box<dyn Error>> {
+        fn polygon(&self, _: &mut dyn Surface, _: bool, _: &dyn Color, _: &Vec<(i32, i32)>, _: i32) -> Result<Rect, Box<dyn Error>> {
             Err("test")?
         }
 

@@ -10,5 +10,6 @@ pub mod rectangle;
 pub mod sprite;
 pub mod surface;
 pub mod time;
+pub mod utility;
 
 mod test;
