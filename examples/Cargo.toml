@@ -14,6 +14,7 @@ rust_game_sdl2 = { path = "../rust_game_sdl2" }
 # https://github.com/Rust-SDL2/rust-sdl2
 sdl2 = "0.35.1"
 
+keycodes = "0.1.*"
 
 [[bin]]
 name = "creature_animation"
@@ -22,6 +23,14 @@ path = "src/creature_animation/main.rs"
 [[bin]]
 name = "draw_shapes"
 path = "src/draw_shapes/main.rs"
+
+[[bin]]
+name = "load_and_store_images"
+path = "src/load_and_store_images/main.rs"
+
+[[bin]]
+name = "mouse_events"
+path = "src/mouse_events/main.rs"
 
 [[bin]]
 name = "sdl2_example"

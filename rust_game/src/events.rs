@@ -5,7 +5,11 @@ use std::error::Error;
 pub enum Event {
     Quit {},
     KeyDown { key_code: i32, key: Option<KeyCode> },
-    KeyUp { key_code: i32 },
+    KeyUp { key_code: i32, key: Option<KeyCode> },
+    MouseMotion { pos: (i32, i32), rel: (i32, i32) },
+    MouseButtonDown { pos: (i32, i32), button: u8 },
+    MouseButtonUp { pos: (i32, i32), button: u8 },
+    MouseWheel { pos: (i32, i32), which: u32, flipped: bool },
 }
 
 pub trait Events {

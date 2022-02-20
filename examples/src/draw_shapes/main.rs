@@ -38,9 +38,6 @@ pub fn main() {
                 Event::KeyDown {
                     key: Some(KeyCode::ESC), ..
                 } => break 'running,
-                Event::KeyDown { key_code, key } => {
-                    println!("{}, {:?}", key_code, key)
-                }
                 _ => {}
             }
         }
@@ -74,15 +71,50 @@ pub fn main() {
         .unwrap();
         DrawUtility::blit_circle(&context, canvas.get_surface(), true, &ColorU8::from_hue_alpha(30, 25), (175, 275), 25, BlendMode::Blend)
             .unwrap();
-        DrawUtility::blit_ellipse(&context, canvas.get_surface(), true, &ColorU8::from_hue_alpha(60, 25), (275, 275), (25, 15), angle as f32, BlendMode::Blend)
-            .unwrap();
-        DrawUtility::blit_arc(&context, canvas.get_surface(), true, &ColorU8::from_hue_alpha(120, 25), (375, 275), 25, 0.0..angle as f32, BlendMode::Blend)
-            .unwrap();
-        DrawUtility::blit_elliptical_arc(&context, canvas.get_surface(), true, &ColorU8::from_hue_alpha(180, 25), (475, 275), (25, 15), angle as f32, 0.0..angle as f32, BlendMode::Blend)
-            .unwrap();    
-        DrawUtility::blit_polygon(&context, canvas.get_surface(), true, &ColorU8::from_hue_alpha(240, 25), &vec![(550, 300), (600, 300), (575, 250)], BlendMode::Blend)
-            .unwrap();
-        
+        DrawUtility::blit_ellipse(
+            &context,
+            canvas.get_surface(),
+            true,
+            &ColorU8::from_hue_alpha(60, 25),
+            (275, 275),
+            (25, 15),
+            angle as f32,
+            BlendMode::Blend,
+        )
+        .unwrap();
+        DrawUtility::blit_arc(
+            &context,
+            canvas.get_surface(),
+            true,
+            &ColorU8::from_hue_alpha(120, 25),
+            (375, 275),
+            25,
+            0.0..angle as f32,
+            BlendMode::Blend,
+        )
+        .unwrap();
+        DrawUtility::blit_elliptical_arc(
+            &context,
+            canvas.get_surface(),
+            true,
+            &ColorU8::from_hue_alpha(180, 25),
+            (475, 275),
+            (25, 15),
+            angle as f32,
+            0.0..angle as f32,
+            BlendMode::Blend,
+        )
+        .unwrap();
+        DrawUtility::blit_polygon(
+            &context,
+            canvas.get_surface(),
+            true,
+            &ColorU8::from_hue_alpha(240, 25),
+            &vec![(550, 300), (600, 300), (575, 250)],
+            BlendMode::Blend,
+        )
+        .unwrap();
+
         draw.lines(canvas.get_surface(), true, &ColorU8::from_hue(300), true, &vec![(650, 100), (700, 100), (675, 50)], 3).unwrap();
         draw.line(canvas.get_surface(), true, &ColorU8::from_hue(300), (650, 150), (700, 200), 3).unwrap();
         draw.line(canvas.get_surface(), true, &ColorU8::from_hue(300), (650, 200), (700, 150), 3).unwrap();

@@ -15,6 +15,10 @@ impl Sdl2Events {
             sdl_context: context.sdl_context.clone(),
         })
     }
+
+    /*fn sdl2_mousebutton_as_u8(button: sdl2::mouse::MouseButton) -> u8 {
+
+    }*/
 }
 
 impl Events for Sdl2Events {
@@ -30,6 +34,25 @@ impl Events for Sdl2Events {
                 sdl2::event::Event::KeyUp { keycode: Some(key), .. } => events.push(Event::KeyDown {
                     key_code: key as i32,
                     key: FromPrimitive::from_i32(key as i32),
+                }),
+                sdl2::event::Event::MouseMotion { x, y, xrel, yrel, .. } => events.push(Event::MouseMotion {
+                    pos: (x, y),
+                    rel: (xrel, yrel),
+                }),
+                sdl2::event::Event::MouseButtonDown { x, y, mouse_btn, .. } => events.push(Event::MouseButtonDown {
+                    pos: (x, y),
+                    button: mouse_btn as u8,
+                }),
+                sdl2::event::Event::MouseButtonUp { x, y, mouse_btn, .. } => events.push(Event::MouseButtonUp {
+                    pos: (x, y),
+                    button: mouse_btn as u8,
+                }),
+                sdl2::event::Event::MouseWheel {
+                    x, y, which, direction, ..
+                } => events.push(Event::MouseWheel {
+                    pos: (x, y),
+                    which: which,
+                    flipped: direction == sdl2::mouse::MouseWheelDirection::Flipped,
                 }),
                 _ => {}
             }

@@ -86,9 +86,6 @@ pub fn main() {
                 Event::KeyDown {
                     key: Some(KeyCode::ESC), ..
                 } => break 'running,
-                Event::KeyDown { key_code, key } => {
-                    println!("{}, {:?}", key_code, key)
-                }
                 _ => {}
             }
         }

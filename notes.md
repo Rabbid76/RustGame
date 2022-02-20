@@ -18,11 +18,25 @@ Possible `Sprite` trait interfaces:
 
 - Subsurface
 
+### Mask
+
 ### Lode and store image
 
 - emoji to surface
 - C++ Image + SVG Reader, link with Rust, test with Windows and Mac. Deploy Crate?
 - capture surface object
+
+### Events
+
+- iterator instead of vec
+- keyboard
+- timer
+
+### Key module
+
+create key codes with macros from ascii characters
+
+### Mouse module
 
 ### Textures
 
