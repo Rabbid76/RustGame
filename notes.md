@@ -16,15 +16,17 @@ Possible `Sprite` trait interfaces:
 
 ### Surface
 
+- Move Surface implementation from sdl2_rust_game to rust_game (raw(): &Vec[u8], raw_mut(): &mut [u8]), SurfaceProxy in sdl2_rust_game for `blit`  
 - Subsurface
-
-### Mask
 
 ### Lode and store image
 
+- move image implementation from sdl2_rust_game to rust_game
 - emoji to surface
 - C++ Image + SVG Reader, link with Rust, test with Windows and Mac. Deploy Crate?
 - capture surface object
+
+### Mask
 
 ### Events
 

@@ -1,6 +1,6 @@
 # RustGame
 
-inspired by pygame
+Inspired by [Pygame](https://www.pygame.org/news). However, [Rust](https://www.rust-lang.org/) is not [Python](https://www.python.org/) and RustGame is not Pygame.
 
 ![creature animation](screenshots/creature_animation.png)
 

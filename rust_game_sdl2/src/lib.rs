@@ -32,5 +32,5 @@ pub mod context;
 mod draw;
 mod events;
 mod image;
-mod opencv_sdl2;
+mod opencv_util;
 mod surface;

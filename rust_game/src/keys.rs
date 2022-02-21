@@ -7,3 +7,9 @@ pub enum KeyCode {
     TAB = keycodes::KEY_TAB as i32,
     ESC = keycodes::KEY_ESCAPE as i32,
 }
+
+impl KeyCode {
+    pub const fn key(c: char) -> i32 {
+        c.to_ascii_lowercase() as i32
+    }
+}

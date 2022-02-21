@@ -1,4 +1,3 @@
-use crate::opencv_sdl2;
 use crate::surface::Sdl2Surface;
 use image::codecs::gif::{GifDecoder, GifEncoder};
 use image::error::ImageError;
@@ -9,7 +8,6 @@ use image::{AnimationDecoder, DynamicImage, Frame, Frames, RgbaImage};
 use resvg;
 use rust_game::image::Image;
 use rust_game::surface::Surface;
-use sdl2;
 use std::error::Error;
 use std::ffi::OsStr;
 use std::fs::File;
@@ -34,12 +32,9 @@ impl Sdl2Image {
     }
 
     pub fn raw_to_surface(size: (u32, u32), src_data: &Vec<u8>) -> Result<Box<dyn Surface>, Box<dyn Error>> {
-        let mut sdl2_surface = sdl2::surface::Surface::new(size.0, size.1, sdl2::pixels::PixelFormatEnum::ABGR8888)?;
-        match sdl2_surface.without_lock_mut() {
-            Some(data) => data.copy_from_slice(src_data),
-            _ => Err("surface data")?,
-        }
-        Ok(Box::new(Sdl2Surface::from_surface(sdl2_surface)))
+        let mut surface = Sdl2Surface::new_alpha(size)?;
+        surface.raw_mut()?.clone_from_slice(src_data);
+        Ok(surface)
     }
 
     pub fn load_image(&self, path: &Path) -> Result<Box<dyn Surface>, Box<dyn Error>> {
@@ -85,15 +80,11 @@ impl Sdl2Image {
     }
 
     fn save_image(&self, surface: &dyn Surface, path: &Path) -> Result<(), Box<dyn Error>> {
-        let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
-        let w = sdl2_surface.get_width();
-        let h = sdl2_surface.get_height();
-        match sdl2_surface.surface.without_lock() {
-            Some(data) => match RgbaImage::from_raw(w, h, data.to_vec()) {
-                Some(image) => image.save(path)?,
-                _ => Err("cannot create image")?,
-            },
-            _ => Err("no image data")?,
+        let w = surface.get_width();
+        let h = surface.get_height();
+        match RgbaImage::from_raw(w, h, surface.raw()?.to_vec()) {
+            Some(image) => image.save(path)?,
+            _ => Err("cannot create image")?,
         };
         Ok(())
     }
@@ -102,17 +93,13 @@ impl Sdl2Image {
         let mut gif_encoder = GifEncoder::new(File::create(path)?);
         let mut animation_frame_vec: Vec<Result<Frame, ImageError>> = Vec::new();
         for surface in frames.iter() {
-            let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface.as_ref())?;
-            let w = sdl2_surface.get_width();
-            let h = sdl2_surface.get_height();
-            match sdl2_surface.surface.without_lock() {
-                //Some(data) => gif_encoder.encode(data, w, h, ColorType::Rgba8)?,
-                Some(data) => match RgbaImage::from_raw(w, h, data.to_vec()) {
-                    Some(image) => animation_frame_vec.push(Ok(Frame::new(image))),
-                    //Some(image) => gif_encoder.encode_frame(Frame::new(image))?,
-                    _ => Err("cannot create image")?,
-                },
-                _ => Err("no image data")?,
+            let w = surface.get_width();
+            let h = surface.get_height();
+            //Some(data) => gif_encoder.encode(data, w, h, ColorType::Rgba8)?,
+            match RgbaImage::from_raw(w, h, surface.raw()?.to_vec()) {
+                Some(image) => animation_frame_vec.push(Ok(Frame::new(image))),
+                //Some(image) => gif_encoder.encode_frame(Frame::new(image))?,
+                _ => Err("cannot create image")?,
             };
         }
         let animation_frame = Frames::new(Box::new(animation_frame_vec.into_iter()));

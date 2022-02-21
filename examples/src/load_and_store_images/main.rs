@@ -30,7 +30,7 @@ pub fn main() {
         let _ = time.get_ticks();
 
         let mut save_images = false;
-        const CHAR_S: i32 = 's' as i32;
+        const CHAR_S: i32 = KeyCode::key('S');
         for event in events.get().unwrap() {
             match event {
                 Event::Quit { .. } => break 'running,

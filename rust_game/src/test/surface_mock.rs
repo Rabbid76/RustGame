@@ -49,6 +49,14 @@ impl Surface for SurfaceMock {
         Rect::new(0, 0, 0, 0)
     }
 
+    fn raw(&self) -> Result<&[u8], Box<dyn Error>> {
+        Err("test")?
+    }
+
+    fn raw_mut(&mut self) -> Result<&mut [u8], Box<dyn Error>> {
+        Err("test")?
+    }
+
     fn fill(&mut self, color: &dyn Color) -> Result<(), Box<dyn Error>> {
         self.fill_color.set(color);
         Ok(())

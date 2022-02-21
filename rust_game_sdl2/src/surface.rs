@@ -1,4 +1,3 @@
-use crate::opencv_sdl2;
 use opencv::core;
 use rust_game::color::Color;
 use rust_game::rectangle::Rect;
@@ -12,6 +11,22 @@ pub struct Sdl2Surface {
 }
 
 impl Sdl2Surface {
+    unsafe fn sdl2_surface_range_to_opencv_mat(
+        sdl2_surface: &sdl2::surface::Surface<'static>,
+        region: &Rect,
+    ) -> Result<core::Mat, Box<dyn Error>> {
+        let raw_surface = sdl2_surface.raw();
+        let w = (*raw_surface).w as i32;
+        let h = (*raw_surface).h as i32;
+        let step = (w * 4) as usize;
+        let mat = core::Mat::new_rows_cols_with_data(h, w, core::CV_8UC4, (*raw_surface).pixels, step)?;
+        Ok(core::Mat::rowscols(
+            &mat,
+            &core::Range::new(region.get_top(), region.get_bottom())?,
+            &core::Range::new(region.get_left(), region.get_right())?,
+        )?)
+    }
+
     pub fn new_alpha(size: (u32, u32)) -> Result<Box<dyn Surface>, Box<dyn Error>> {
         Ok(Box::new(Sdl2Surface {
             surface: sdl2::surface::Surface::new(size.0, size.1, sdl2::pixels::PixelFormatEnum::ABGR8888)?,
@@ -86,8 +101,8 @@ impl Sdl2Surface {
         unsafe {
             match blend_mode {
                 BlendMode::MultiplyRGBA => {
-                    let mut dest_mat = opencv_sdl2::sdl2_surface_range_to_opencv_mat(dest_surface, dest_rect)?;
-                    let src_mat = opencv_sdl2::sdl2_surface_range_to_opencv_mat(source_surface, src_rect)?;
+                    let mut dest_mat = Sdl2Surface::sdl2_surface_range_to_opencv_mat(dest_surface, dest_rect)?;
+                    let src_mat = Sdl2Surface::sdl2_surface_range_to_opencv_mat(source_surface, src_rect)?;
                     core::multiply(&dest_mat.clone(), &src_mat, &mut dest_mat, 1.0 / 255.0, -1)?;
                 }
                 _ => Err("not yet implemented")?,
@@ -135,6 +150,20 @@ impl Surface for Sdl2Surface {
 
     fn get_rect(&self) -> Rect {
         Rect::new(0, 0, self.surface.width() as i32, self.surface.height() as i32)
+    }
+
+    fn raw(&self) -> Result<&[u8], Box<dyn Error>> {
+        match self.surface.without_lock() {
+            Some(data) => Ok(data),
+            _ => Err("cannot retrieve raw data")?,
+        }
+    }
+
+    fn raw_mut(&mut self) -> Result<&mut [u8], Box<dyn Error>> {
+        match self.surface.without_lock_mut() {
+            Some(data) => Ok(data),
+            _ => Err("cannot retrieve raw data")?,
+        }
     }
 
     fn fill(&mut self, color: &dyn Color) -> Result<(), Box<dyn Error>> {

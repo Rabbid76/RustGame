@@ -22,6 +22,8 @@ pub trait Surface {
     fn get_height(&self) -> u32;
     fn get_size(&self) -> (u32, u32);
     fn get_rect(&self) -> Rect;
+    fn raw(&self) -> Result<&[u8], Box<dyn Error>>;
+    fn raw_mut(&mut self) -> Result<&mut [u8], Box<dyn Error>>;
     fn fill(&mut self, color: &dyn Color) -> Result<(), Box<dyn Error>>;
     fn blit(&mut self, source_surface: &dyn Surface, position: (i32, i32), blend_mode: BlendMode) -> Result<Rect, Box<dyn Error>>;
 }

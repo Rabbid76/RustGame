@@ -1,4 +1,4 @@
-use crate::opencv_sdl2;
+use crate::opencv_util;
 use opencv::core;
 use opencv::imgproc;
 use opencv::types;
@@ -71,9 +71,8 @@ impl Sdl2Draw {
         rectangle: Rect,
         line_width: i32,
     ) -> Result<(), Box<dyn Error>> {
-        let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
         unsafe {
-            let mut mat = opencv_sdl2::sdl2_surface_to_opencv_mat(&sdl2_surface.surface)?;
+            let mut mat = opencv_util::surface_to_opencv_mat(surface)?;
             let line_type = if antialias { imgproc::LINE_AA } else { imgproc::LINE_8 };
             let shift = 0;
             imgproc::rectangle(
@@ -97,9 +96,8 @@ impl Sdl2Draw {
         radius: i32,
         line_width: i32,
     ) -> Result<(), Box<dyn Error>> {
-        let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
         unsafe {
-            let mut mat = opencv_sdl2::sdl2_surface_to_opencv_mat(&sdl2_surface.surface)?;
+            let mut mat = opencv_util::surface_to_opencv_mat(surface)?;
             let line_type = if antialias { imgproc::LINE_AA } else { imgproc::FILLED };
             let shift = 0;
             imgproc::circle(
@@ -126,9 +124,8 @@ impl Sdl2Draw {
         arc_angle: Range<f32>,
         line_width: i32,
     ) -> Result<(), Box<dyn Error>> {
-        let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
         unsafe {
-            let mut mat = opencv_sdl2::sdl2_surface_to_opencv_mat(&sdl2_surface.surface)?;
+            let mut mat = opencv_util::surface_to_opencv_mat(surface)?;
             let line_type = if antialias { imgproc::LINE_AA } else { imgproc::FILLED };
             let shift = 0;
             imgproc::ellipse(
@@ -154,9 +151,8 @@ impl Sdl2Draw {
         color: &dyn Color,
         points: &Vec<(i32, i32)>,
     ) -> Result<(), Box<dyn Error>> {
-        let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
         unsafe {
-            let mut mat = opencv_sdl2::sdl2_surface_to_opencv_mat(&sdl2_surface.surface)?;
+            let mut mat = opencv_util::surface_to_opencv_mat(surface)?;
             let line_type = if antialias { imgproc::LINE_AA } else { imgproc::FILLED };
             let shift = 0;
             imgproc::fill_poly(
@@ -274,9 +270,8 @@ impl Draw for Sdl2Draw {
         end: (i32, i32),
         line_width: i32,
     ) -> Result<Rect, Box<dyn Error>> {
-        let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
         unsafe {
-            let mut mat = opencv_sdl2::sdl2_surface_to_opencv_mat(&sdl2_surface.surface)?;
+            let mut mat = opencv_util::surface_to_opencv_mat(surface)?;
             let line_type = if antialias { imgproc::LINE_AA } else { imgproc::LINE_8 };
             let shift = 0;
             imgproc::line(
@@ -301,9 +296,8 @@ impl Draw for Sdl2Draw {
         points: &Vec<(i32, i32)>,
         line_width: i32,
     ) -> Result<Rect, Box<dyn Error>> {
-        let sdl2_surface = opencv_sdl2::surface_to_sdl2_surface(surface)?;
         unsafe {
-            let mut mat = opencv_sdl2::sdl2_surface_to_opencv_mat(&sdl2_surface.surface)?;
+            let mut mat = opencv_util::surface_to_opencv_mat(surface)?;
             let line_type = if antialias { imgproc::LINE_AA } else { imgproc::LINE_8 };
             let shift = 0;
             imgproc::polylines(
